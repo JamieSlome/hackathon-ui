@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "gen-client": "openapi-generator-cli generate -i openapi/api.yaml -g typescript-fetch -o src/client --additional-properties=ngVersion=6.1.7,npmName=restClient,supportsES6=true,npmVersion=6.9.0,withInterfaces=true"
   },
   "dependencies": {
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "express": "^4.18.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

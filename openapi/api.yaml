@@ -1,0 +1,202 @@
+openapi: 3.0.3
+info:
+  title: People in Need - Springboard Service
+  description: |-
+    For the backend supporting the Citi 2023 Techfest Hackathon project. 
+    This backend is meant to be a simple CRUD service for supporting 
+    collaboration between organizations and the beneficiaries supported by them.
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  /beneficiaries:
+    get:
+      tags:
+        - beneficiary
+      summary: List beneficiaries.
+      description: |
+        Retrieve a list of beneficiaries currently tracked.
+      operationId: listBeneficiaries
+      responses:
+        '200':
+          description: Successfully retrieved list of beneficiaries.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Beneficiaries'
+  /beneficiaries/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - beneficiary
+      summary: Retrieve a Beneficiary.
+      description: |
+        Retrieve a beneficiary based on id.
+      operationId: findBeneficiary
+      responses:
+        '200':
+          description: Successfully retrieved a beneficiary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Beneficiary'
+  /organizations:
+    get:
+      tags:
+        - organization
+      summary: List organizations.
+      description: |
+        Retrieve a list of organizations currently tracked.
+      operationId: listOrganizations
+      responses:
+        '200':
+          description: Successfully retrieved list of organizations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organizations'
+  /organizations/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - organization
+      summary: Retrieve an organization.
+      description: |
+        Retrieve an organization based on id.
+      operationId: findOrganization
+      responses:
+        '200':
+          description: Successfully retrieved an organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+  /needs:
+    get:
+      tags:
+        - need
+      summary: List needs.
+      description: |
+        Retrieve a list of needs currently tracked.
+      operationId: listNeeds
+      responses:
+        '200':
+          description: Successfully retrieved list of needs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Needs'
+  /needs/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - need
+      summary: Retrieve a need.
+      description: |
+        Retrieve a need based on id.
+      operationId: findNeed
+      responses:
+        '200':
+          description: Successfully retrieved a need.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Need'
+components:
+  schemas:
+    Beneficiary:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int 64
+          example: 1
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date-time
+        identity:
+          type: string
+          example: M
+        phoneNumber:
+          type: string
+        cabinNumber:
+          type: number
+        needs:
+          type: array
+          items:
+            $ref: '#/components/schemas/BeneficiaryNeed'
+        comments:
+          type: string
+    Beneficiaries:
+      type: array
+      items:
+        $ref: '#/components/schemas/Beneficiary'
+    BeneficiaryNeed:
+      type: object
+      properties:
+        need:
+          $ref: '#/components/schemas/Need'
+        organization:
+          $ref: '#/components/schemas/Organization'
+    Need:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int 64
+          example: 1
+        name:
+          type: string
+        description:
+          type: string
+        alternativeName:
+          type: string
+    Needs:
+      type: array
+      items:
+        $ref: '#/components/schemas/Need'
+    Organization:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int 64
+          example: 1
+        name:
+          type: string
+        streetAddress:
+          type: string
+        state:
+          type: string
+        zipcode:
+          type: string
+        phoneNumber:
+          type: string
+        description:
+          type: string
+    Organizations:
+      type: array
+      items:
+        $ref: '#/components/schemas/Organization'
+
+
+  
