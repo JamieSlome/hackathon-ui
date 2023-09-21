@@ -11,6 +11,9 @@
     "gen-client": "openapi-generator-cli generate -i openapi/api.yaml -g typescript-fetch -o src/client --additional-properties=ngVersion=6.1.7,npmName=restClient,supportsES6=true,npmVersion=6.9.0,withInterfaces=true"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.14.10",
     "@openapitools/openapi-generator-cli": "^2.7.0",
     "express": "^4.18.2",
     "react": "^18.2.0",
