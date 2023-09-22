@@ -22,18 +22,18 @@ interface TableProps {
   data: Required<Beneficiary>[];
 }
 
-const ageRanges = [
-  { label: "0-9", value: "0-9" },
-  { label: "10-19", value: "10-19" },
-  { label: "20-29", value: "20-29" },
-  { label: "30-39", value: "30-39" },
-  { label: "40-49", value: "40-49" },
-  { label: "50-59", value: "50-59" },
-  { label: "60-69", value: "60-69" },
-  { label: "70+", value: "70+" },
+export const ageRanges = [
+  { label: "0-9", value: "0-9", min: 0, max: 9 },
+  { label: "10-19", value: "10-19", min: 10, max: 19 },
+  { label: "20-29", value: "20-29", min: 20, max: 29 },
+  { label: "30-39", value: "30-39", min: 30, max: 39 },
+  { label: "40-49", value: "40-49", min: 40, max: 49 },
+  { label: "50-59", value: "50-59", min: 50, max: 59 },
+  { label: "60-69", value: "60-69", min: 60, max: 69 },
+  { label: "70+", value: "70+", min: 70, max: 1000 },
 ];
 
-function getAge(birthDate: Date): number {
+export function getAge(birthDate: Date): number {
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
