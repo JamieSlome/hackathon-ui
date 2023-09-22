@@ -15,6 +15,7 @@ import { Layout } from "./components";
 import { Dashboard } from "./pages/dashboard";
 import { Landing } from "./pages/landing";
 import { Beneficiary } from "./pages/beneficiary/Beneficiary";
+import { Organizations } from "./pages/organizations";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
           {
             path: "/dashboard",
             element: <Dashboard />,
+          },
+          {
+            path: "/providers",
+            element: <Organizations />,
           },
         ],
       },

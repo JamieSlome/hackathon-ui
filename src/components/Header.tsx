@@ -62,7 +62,9 @@ export const Header = () => {
               mr: 1,
             }}
           >
-            <Logo />
+            <Link to="/">
+              <Logo />
+            </Link>
           </Box>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton

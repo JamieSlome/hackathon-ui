@@ -16,7 +16,6 @@ export const useNeedList = () => {
       const n = await client.listNeeds();
       return n;
     } catch (err) {
-      debugger;
       return [];
     }
   });

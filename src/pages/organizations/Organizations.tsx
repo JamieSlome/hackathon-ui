@@ -1,11 +1,11 @@
 import { Box, Button, LinearProgress } from "@mui/material";
 import { Link } from "react-router-dom";
-import { Beneficiary } from "../../client/src";
-import { useBeneficiaryList } from "../../data";
-import { BeneficiariesTable } from "./Table";
+import { Organization } from "../../client/src";
+import { useOrganizationList } from "../../data/useOrganizationList";
+import { OrganizationsTable } from "./Table";
 
-export const Beneficiaries = () => {
-  const { data: users, isLoading } = useBeneficiaryList();
+export const Organizations = () => {
+  const { data: orgs, isLoading } = useOrganizationList();
   return (
     <Box
       sx={{
@@ -30,13 +30,14 @@ export const Beneficiaries = () => {
           }}
         >
           <Button variant="contained" component={Link} to="/beneficiaries/new">
-            New Beneficiary
+            New Organization
           </Button>
         </Box>
-        {isLoading || !users ? (
+
+        {isLoading || !orgs ? (
           <LinearProgress />
         ) : (
-          <BeneficiariesTable data={users as Required<Beneficiary>[]} />
+          <OrganizationsTable data={orgs as Required<Organization>[]} />
         )}
       </Box>
     </Box>

@@ -73,3 +73,7 @@ html, body {
   margin: 0;
   background-color: #f5f5f5;
 }
+
+div.MuiStack-root {
+  overflow: visible;
+}

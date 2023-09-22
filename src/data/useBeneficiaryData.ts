@@ -1,8 +1,12 @@
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import { useActivityList, useNeedList } from ".";
-import { Activity, Beneficiary } from "../client/src";
-import { users } from "../constants";
+import {
+  Activity,
+  Beneficiary,
+  BeneficiaryApi,
+  Configuration,
+} from "../client/src";
 import { useOrganizationList } from "./useOrganizationList";
 
 export type EditableBeneficiary = Omit<Beneficiary, "dateOfBirth"> & {
@@ -39,14 +43,18 @@ export const useBeneficiaryData = (userId?: string) => {
 
   useEffect(() => {
     if (userId) {
-      const user = users.find((u) => u.id === userId);
-      if (user) {
+      const beneficiaryApi = new BeneficiaryApi(
+        new Configuration({
+          basePath: "https://pttmuyg4gp.us-east-1.awsapprunner.com",
+        })
+      );
+      beneficiaryApi.findBeneficiary({ id: userId }).then((b) => {
         setFormData({
-          ...user,
-          dateOfBirth: dayjs(user.dateOfBirth),
+          ...b,
+          dateOfBirth: dayjs(b.dateOfBirth),
         });
         setLoading(false);
-      }
+      });
     }
   }, [userId]);
 

@@ -36,9 +36,6 @@ export const ageRanges = [
 
 export function getAge(birthDate: Date): number {
   const today = new Date();
-  if (!birthDate) {
-    debugger;
-  }
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
   if (
@@ -59,13 +56,12 @@ export const BeneficiariesTable: React.FC<TableProps> = ({ data }) => {
     needs: [],
   });
   const { data: needs = [] } = useNeedList();
+  const needsMap = new Map(needs.map((need) => [need.id, need.name]));
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFilter({ ...filter, [name]: value });
   };
-
-  const needsMap = new Map(needs.map((need) => [need.name, need.id]));
 
   const filteredData = data.filter((person) => {
     const age = getAge(person.dateOfBirth);
@@ -249,7 +245,11 @@ export const BeneficiariesTable: React.FC<TableProps> = ({ data }) => {
                 <TableCell>{beneficiary.cabinNumber}</TableCell>
                 <TableCell>
                   {beneficiary.needs.filter(Boolean).map((needId) => (
-                    <Chip key={needId} label={needId} sx={{ marginRight: 1 }} />
+                    <Chip
+                      key={needId}
+                      label={needsMap.get(needId)}
+                      sx={{ marginRight: 1 }}
+                    />
                   ))}
                 </TableCell>
                 <TableCell>{beneficiary.comments}</TableCell>
