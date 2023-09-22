@@ -65,6 +65,7 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
     activitiesList,
     orgList,
     activities,
+    hasOutcome,
     needsMap,
     orgMap,
   } = useBeneficiaryData(userId);
@@ -131,7 +132,7 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
           },
         });
         beneficiaryId = resp.id;
-      } else if (outcome && outcomeDate) {
+      } else if (!hasOutcome && outcome && outcomeDate) {
         await beneficiaryApi.createBeneficiaryOutcome({
           id: userId!,
           createBeneficiaryOutcomeRequest: {
@@ -167,7 +168,7 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
         );
       }
       if (isNew) {
-        // navigate(`/beneficiaries/${resp.id}/info`);
+        navigate(`/beneficiaries/${beneficiaryId}/info`);
       }
     } finally {
       setSubmitting(false);
@@ -232,15 +233,17 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                     justifyContent: "center",
                   }}
                 >
-                  <img
-                    src={`https://randomuser.me/api/portraits/${
-                      formData.identity?.toLocaleLowerCase().startsWith("f")
-                        ? "women"
-                        : "men"
-                    }/${randomImageId}.jpg`}
-                    height={200}
-                    width={200}
-                  />
+                  {!isNew && (
+                    <img
+                      src={`https://randomuser.me/api/portraits/${
+                        formData.identity?.toLocaleLowerCase().startsWith("f")
+                          ? "women"
+                          : "men"
+                      }/${randomImageId}.jpg`}
+                      height={200}
+                      width={200}
+                    />
+                  )}
                 </Grid>
                 <Grid item xs={10} container spacing={2}>
                   <Grid item xs={12} sm={6}>
@@ -467,29 +470,33 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                         sx={{ width: 120, textAlign: "center" }}
                       />
                       <Box sx={{ width: 120 }}>
-                        {userId && activity.id ? (
-                          <Button
-                            variant="text"
-                            sx={{ whiteSpace: "nowrap" }}
-                            onClick={() => {
-                              setActivity(activity);
-                            }}
-                          >
-                            Set Complete
-                          </Button>
-                        ) : (
-                          <IconButton
-                            sx={{ width: "40px" }}
-                            onClick={() => {
-                              setActivities(
-                                activities.filter(
-                                  (o) => o.organizationId !== org.id
-                                )
-                              );
-                            }}
-                          >
-                            <DeleteOutline />
-                          </IconButton>
+                        {editing && (
+                          <>
+                            {userId && activity.id ? (
+                              <Button
+                                variant="text"
+                                sx={{ whiteSpace: "nowrap" }}
+                                onClick={() => {
+                                  setActivity(activity);
+                                }}
+                              >
+                                Set Complete
+                              </Button>
+                            ) : (
+                              <IconButton
+                                sx={{ width: "40px" }}
+                                onClick={() => {
+                                  setActivities(
+                                    activities.filter(
+                                      (o) => o.organizationId !== org.id
+                                    )
+                                  );
+                                }}
+                              >
+                                <DeleteOutline />
+                              </IconButton>
+                            )}
+                          </>
                         )}
                       </Box>
                     </ListItem>
@@ -579,26 +586,6 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
               alignItems: "center",
             }}
           >
-            {editing && (
-              <DemoContainer
-                components={["DatePicker"]}
-                sx={{
-                  top: "10px",
-                  position: "relative",
-                }}
-              >
-                <DatePicker
-                  label="Effective Date"
-                  value={formData.dateOfBirth}
-                  onChange={handleDateChange}
-                  sx={{
-                    ...sharedStyles,
-                    position: "relative",
-                    bottom: "8px",
-                  }}
-                />
-              </DemoContainer>
-            )}
             <Button
               onClick={async (e) => {
                 e.preventDefault();
