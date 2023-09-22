@@ -16,79 +16,72 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Organization
+ * @interface OrganizationCreationRequest
  */
-export interface Organization {
+export interface OrganizationCreationRequest {
     /**
      * 
      * @type {string}
-     * @memberof Organization
-     */
-    id?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Organization
+     * @memberof OrganizationCreationRequest
      */
     name?: string;
     /**
      * 
      * @type {string}
-     * @memberof Organization
+     * @memberof OrganizationCreationRequest
      */
     streetAddress?: string;
     /**
      * 
      * @type {string}
-     * @memberof Organization
+     * @memberof OrganizationCreationRequest
      */
     state?: string;
     /**
      * 
      * @type {string}
-     * @memberof Organization
+     * @memberof OrganizationCreationRequest
      */
     zipcode?: string;
     /**
      * 
      * @type {string}
-     * @memberof Organization
+     * @memberof OrganizationCreationRequest
      */
     phoneNumber?: string;
     /**
      * 
      * @type {string}
-     * @memberof Organization
+     * @memberof OrganizationCreationRequest
      */
     description?: string;
     /**
      * 
      * @type {Array<string>}
-     * @memberof Organization
+     * @memberof OrganizationCreationRequest
      */
     needs?: Array<string>;
 }
 
 /**
- * Check if a given object implements the Organization interface.
+ * Check if a given object implements the OrganizationCreationRequest interface.
  */
-export function instanceOfOrganization(value: object): boolean {
+export function instanceOfOrganizationCreationRequest(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function OrganizationFromJSON(json: any): Organization {
-    return OrganizationFromJSONTyped(json, false);
+export function OrganizationCreationRequestFromJSON(json: any): OrganizationCreationRequest {
+    return OrganizationCreationRequestFromJSONTyped(json, false);
 }
 
-export function OrganizationFromJSONTyped(json: any, ignoreDiscriminator: boolean): Organization {
+export function OrganizationCreationRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): OrganizationCreationRequest {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
         'streetAddress': !exists(json, 'streetAddress') ? undefined : json['streetAddress'],
         'state': !exists(json, 'state') ? undefined : json['state'],
@@ -99,7 +92,7 @@ export function OrganizationFromJSONTyped(json: any, ignoreDiscriminator: boolea
     };
 }
 
-export function OrganizationToJSON(value?: Organization | null): any {
+export function OrganizationCreationRequestToJSON(value?: OrganizationCreationRequest | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -108,7 +101,6 @@ export function OrganizationToJSON(value?: Organization | null): any {
     }
     return {
         
-        'id': value.id,
         'name': value.name,
         'streetAddress': value.streetAddress,
         'state': value.state,

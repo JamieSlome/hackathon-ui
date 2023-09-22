@@ -1,38 +1,50 @@
-import React, { useState } from "react";
 import {
-  Modal,
+  Autocomplete,
   Box,
-  Typography,
-  TextField,
   Button,
   MenuItem,
+  Modal,
+  TextField,
 } from "@mui/material";
-import { Need } from "../../../client/src";
+import React, { useState } from "react";
+import { Need, Organization } from "../../../client/src";
 import { dateToDatePickerFormat } from "../utils";
 
 interface Props {
-  needs: Need[];
+  needsMap: Map<string | undefined, Need>;
   open: boolean;
-  onChange: (needId: number, startDate: string, comments: string) => void;
+  onChange: (
+    organizationId: string,
+    needId: string,
+    startDate: string,
+    comments: string
+  ) => void;
   onClose: () => void;
+  orgList: Organization[];
 }
 
 interface NeedOption {
-  value: number;
+  value: string;
   label: string;
 }
 
 const today = dateToDatePickerFormat(new Date());
 
 export const OrganizationActivityModal: React.FC<Props> = ({
-  needs,
+  needsMap,
   open,
   onChange,
   onClose,
+  orgList,
 }) => {
-  const [selectedNeed, setSelectedNeed] = useState<number | null>(null);
+  const [selectedNeed, setSelectedNeed] = useState<string | null>(null);
   const [startDate, setStartDate] = useState<string>(today);
+  const [organization, setOrganization] = useState<Organization | null>(null);
   const [comments, setComments] = useState<string>("");
+
+  const needs = (organization?.needs
+    ?.map((n) => needsMap.get(n.toString()))
+    .filter(Boolean) ?? []) as Need[];
 
   const needOptions: NeedOption[] = needs.map((need) => ({
     value: need.id!,
@@ -40,7 +52,7 @@ export const OrganizationActivityModal: React.FC<Props> = ({
   }));
 
   const handleNeedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedNeed(Number(event.target.value));
+    setSelectedNeed(event.target.value);
   };
 
   const handleStartDateChange = (
@@ -50,8 +62,8 @@ export const OrganizationActivityModal: React.FC<Props> = ({
   };
 
   const handleSubmit = () => {
-    if (selectedNeed && startDate) {
-      onChange(selectedNeed, startDate, comments);
+    if (organization && selectedNeed && startDate) {
+      onChange(organization.id!, selectedNeed, startDate, comments);
     }
     onClose();
   };
@@ -70,9 +82,29 @@ export const OrganizationActivityModal: React.FC<Props> = ({
           p: 4,
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          Select Need and Start Date
-        </Typography>
+        <Autocomplete
+          value={organization}
+          options={orgList}
+          getOptionLabel={(option) =>
+            `${option.name as string} (${option
+              .needs!.map((nId) => needsMap.get(nId?.toString()))
+              .map((need) => need?.name)
+              .join(", ")})`
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              name="organizations"
+              label="Organizations"
+              fullWidth
+            />
+          )}
+          onChange={(_e, value) => {
+            if (value) {
+              setOrganization(value ?? null);
+            }
+          }}
+        />
         <TextField
           select
           label="Need"

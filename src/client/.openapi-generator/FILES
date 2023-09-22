@@ -1,5 +1,6 @@
 .gitignore
 .npmignore
+.openapi-generator-ignore
 README.md
 package.json
 src/apis/ActivityApi.ts
@@ -14,9 +15,12 @@ src/models/ActivityStatus.ts
 src/models/Beneficiary.ts
 src/models/BeneficiaryCreationRequest.ts
 src/models/BeneficiaryNeed.ts
+src/models/CreateBeneficiaryOutcomeRequest.ts
 src/models/Need.ts
 src/models/NeedCreationRequest.ts
 src/models/Organization.ts
+src/models/OrganizationCreationRequest.ts
+src/models/OutcomeEvent.ts
 src/models/index.ts
 src/runtime.ts
 tsconfig.esm.json

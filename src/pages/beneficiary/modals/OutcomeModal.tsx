@@ -1,31 +1,38 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+} from "@mui/material";
 import React, { useState } from "react";
 import { dateToDatePickerFormat } from "../utils";
+import { OutcomeEvent } from "../../../client/src";
 
 interface Props {
-  comments: string;
   open: boolean;
-  onChange: (endDate: string, comments: string) => void;
+  onChange: (outcome: OutcomeEvent, date: string, comments: string) => void;
   onClose: () => void;
 }
 const today = dateToDatePickerFormat(new Date());
 
-export const ActivityCompleteModal: React.FC<Props> = ({
-  comments: initialComments,
-  open,
-  onChange,
-  onClose,
-}) => {
+const OUTCOMES = Object.entries(OutcomeEvent);
+
+export const OutcomeModal: React.FC<Props> = ({ open, onChange, onClose }) => {
+  const [outcome, setOutcome] = useState<OutcomeEvent | null>(null);
   const [endDate, setEndDate] = useState<string>(today);
-  const [comments, setComments] = useState<string>(initialComments);
+  const [comment, setComment] = useState<string>("");
 
   const handleendDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEndDate(event.target.value);
   };
 
   const handleSubmit = () => {
-    if (endDate) {
-      onChange(endDate, comments);
+    if (outcome) {
+      onChange(outcome, endDate, comment);
     }
     onClose();
   };
@@ -44,11 +51,32 @@ export const ActivityCompleteModal: React.FC<Props> = ({
           p: 4,
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          Select End Date
-        </Typography>
+        <FormControl
+          variant="outlined"
+          style={{ backgroundColor: "white" }}
+          fullWidth
+        >
+          <InputLabel htmlFor="cabin-select">Outcome</InputLabel>
+          <Select
+            value={outcome}
+            onChange={(e) => {
+              setOutcome(e.target.value as OutcomeEvent);
+            }}
+            label="outcome"
+            inputProps={{
+              name: "outcome",
+              id: "outcome-select",
+            }}
+          >
+            {OUTCOMES.map(([value, label]) => (
+              <MenuItem key={label} value={value}>
+                {label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <TextField
-          label="Completed Date"
+          label="Start Date"
           type="date"
           value={endDate}
           onChange={handleendDateChange}
@@ -60,9 +88,9 @@ export const ActivityCompleteModal: React.FC<Props> = ({
         <TextField
           name="comments"
           label="Comments"
-          value={comments}
+          value={comment}
           onChange={(e) => {
-            setComments(e.target.value);
+            setComment(e.target.value);
           }}
           multiline
           rows={4}

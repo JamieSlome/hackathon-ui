@@ -24,8 +24,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { Dayjs } from "dayjs";
-import React, { useState } from "react";
-import { Activity, Need, Organization } from "../../client/src";
+import React, { useMemo, useState } from "react";
+import { Activity, ActivityApi, BeneficiaryApi, Need } from "../../client/src";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
@@ -36,16 +36,18 @@ import { cabins } from "../../constants";
 import { useBeneficiaryData } from "../../data/useBeneficiaryData";
 import { ActivityCompleteModal } from "./modals/ActivityCompleteModal";
 import { OrganizationActivityModal } from "./modals/OrganizationActivityModal";
+import { OutcomeModal } from "./modals/OutcomeModal";
 
 interface Props {
   isNew?: boolean;
-  userId?: number;
+  userId?: string;
 }
 
 export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
   const [editing, setEditing] = useState(isNew);
+  const [showOutcomeModal, setShowOutcomeModal] = useState(false);
   const [needs, setNeeds] = useState<Need[]>([]);
-  const [organization, setOrganization] = useState<Organization | null>(null);
+  const [showActivityModel, setShowActivityModel] = useState(false);
   const [activity, setActivity] = useState<Activity | null>(null);
 
   const {
@@ -53,12 +55,14 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
     setFormData,
     needsList,
     setActivities,
+    activitiesList,
     orgList,
     activities,
     needsMap,
     orgMap,
   } = useBeneficiaryData(userId);
 
+  const [submitting, setSubmitting] = React.useState(false);
   const handleDateChange = (date: Dayjs | null) => {
     setFormData({ ...formData, dateOfBirth: date ?? null });
   };
@@ -68,9 +72,57 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     // onSubmit(formData);
+    try {
+      setSubmitting(true);
+      let newActivities: Activity[] | null = null;
+      let updatedActivities: Activity[] | null = null;
+      if (isNew) {
+        // we can just add acitivities
+        newActivities = activities;
+      } else {
+        newActivities = activities.filter((a) => !a.id);
+        updatedActivities = activities
+          .filter((a) => a.id && a.endDate)
+          .filter((a) => {
+            const currentActivity = activitiesList?.find(
+              (curA) => curA.id === a.id
+            );
+            return (
+              currentActivity?.endDate !== a.endDate ||
+              currentActivity?.comments !== a.comments
+            );
+          });
+      }
+
+      const beneficiaryApi = new BeneficiaryApi();
+      const activitiesApi = new ActivityApi();
+
+      const { outcome, outcomeComment, outcomeDate, ...beneficiary } = formData;
+      await beneficiaryApi.createBeneficiary({
+        beneficiaryCreationRequest: {
+          ...beneficiary,
+          dateOfBirth: beneficiary.dateOfBirth?.toDate(),
+        },
+      });
+      if (newActivities?.length) {
+        await Promise.all(
+          newActivities.map((activityCreationRequest) =>
+            activitiesApi.createActivity({ activityCreationRequest })
+          )
+        );
+      }
+      if (updatedActivities?.length) {
+        await Promise.all(
+          updatedActivities.map((activityCreationRequest) =>
+            activitiesApi.createActivity({ activityCreationRequest })
+          )
+        );
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const sharedStyles: SxProps = editing
@@ -87,10 +139,20 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
   if (userId) {
     buttonText = editing ? "Save" : "Edit";
   }
+  const randomImageId = useMemo(() => {
+    return ~~(50 + Math.random() * 50);
+  }, []);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Paper sx={{ p: 2 }}>
+      <Paper
+        sx={{
+          p: 2,
+          opacity: submitting ? 0.5 : 1,
+          transition: "opacity .1s ease-in",
+          pointerEvents: submitting ? "none" : "",
+        }}
+      >
         <Typography variant="h4" gutterBottom>
           {isNew
             ? "Beneficiary Intake"
@@ -110,142 +172,153 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
             </CardMedia>
             <CardContent>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    disabled={!editing}
-                    name="firstName"
-                    label="First Name"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    fullWidth
-                    sx={sharedStyles}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    disabled={!editing}
-                    name="lastName"
-                    label="Last Name"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    fullWidth
-                    sx={sharedStyles}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <DemoContainer components={["DatePicker"]}>
-                    <DatePicker
-                      label="Date of Birth"
-                      value={formData.dateOfBirth}
-                      onChange={handleDateChange}
-                      sx={{
-                        ...sharedStyles,
-                        position: "relative",
-                        bottom: "8px",
-                      }}
-                    />
-                  </DemoContainer>
-                </Grid>
-                <Grid item xs={3}>
-                  <Autocomplete
-                    disabled={!editing}
-                    freeSolo
-                    options={["Male", "Female", "Non-binary"]}
-                    renderInput={(params) => (
-                      <TextField
-                        name="identity"
-                        label="Gender Identity"
-                        {...params}
-                        sx={sharedStyles}
-                      />
-                    )}
-                    fullWidth
-                  />
-                </Grid>
                 <Grid item xs={2}>
-                  <FormControl
-                    variant="outlined"
-                    style={{ backgroundColor: "white" }}
-                    fullWidth
-                  >
-                    <InputLabel htmlFor="cabin-select">Cabin Number</InputLabel>
-                    <Select
-                      value={formData.cabinNumber}
-                      disabled={!editing}
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          cabinNumber: e.target.value as number,
-                        });
-                      }}
-                      label="cabinNumber"
-                      inputProps={{
-                        name: "cabinNumber",
-                        id: "cabinNumber-select",
-                      }}
-                      sx={sharedStyles}
-                    >
-                      {cabins.map((cabin) => (
-                        <MenuItem key={cabin} value={cabin}>
-                          {cabin}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={3}>
-                  <PhoneNumberTextField
-                    name="phoneNumber"
-                    disabled={!editing}
-                    label="Phone Number"
-                    defaultCountry="us"
-                    value={formData.phoneNumber ?? "123"}
-                    onChange={(value) => {
-                      setFormData({
-                        ...formData,
-                        phoneNumber: value as string,
-                      });
-                    }}
-                    fullWidth
-                    sx={sharedStyles}
+                  <img
+                    src={`https://randomuser.me/api/portraits/men/${
+                      isNew ? randomImageId : formData.id
+                    }.jpg`}
                   />
                 </Grid>
-                <Grid item xs={12}>
-                  {needsList && (
-                    <>
-                      <Autocomplete
-                        disabled={!editing}
-                        multiple
-                        value={needs}
-                        options={needsList}
-                        getOptionLabel={(option) => option.name as string}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            name="needs"
-                            label="Needs"
-                            fullWidth
-                            sx={sharedStyles}
-                          />
-                        )}
-                        onChange={(_e, value) => {
-                          setNeeds(value ?? []);
+                <Grid item xs={10} container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      disabled={!editing}
+                      name="firstName"
+                      label="First Name"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      fullWidth
+                      sx={sharedStyles}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      disabled={!editing}
+                      name="lastName"
+                      label="Last Name"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      fullWidth
+                      sx={sharedStyles}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <DemoContainer components={["DatePicker"]}>
+                      <DatePicker
+                        label="Date of Birth"
+                        value={formData.dateOfBirth}
+                        onChange={handleDateChange}
+                        sx={{
+                          ...sharedStyles,
+                          position: "relative",
+                          bottom: "8px",
                         }}
                       />
-                    </>
-                  )}
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    name="comments"
-                    label="Comments"
-                    value={formData.comments}
-                    onChange={handleInputChange}
-                    multiline
-                    rows={4}
-                    fullWidth
-                    sx={sharedStyles}
-                  />
+                    </DemoContainer>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Autocomplete
+                      disabled={!editing}
+                      freeSolo
+                      options={["Male", "Female", "Non-binary"]}
+                      renderInput={(params) => (
+                        <TextField
+                          name="identity"
+                          label="Gender Identity"
+                          {...params}
+                          sx={sharedStyles}
+                        />
+                      )}
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <FormControl
+                      variant="outlined"
+                      style={{ backgroundColor: "white" }}
+                      fullWidth
+                    >
+                      <InputLabel htmlFor="cabin-select">
+                        Cabin Number
+                      </InputLabel>
+                      <Select
+                        value={formData.cabinNumber}
+                        disabled={!editing}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            cabinNumber: e.target.value as number,
+                          });
+                        }}
+                        label="cabinNumber"
+                        inputProps={{
+                          name: "cabinNumber",
+                          id: "cabinNumber-select",
+                        }}
+                        sx={sharedStyles}
+                      >
+                        {cabins.map((cabin) => (
+                          <MenuItem key={cabin} value={cabin}>
+                            {cabin}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <PhoneNumberTextField
+                      name="phoneNumber"
+                      disabled={!editing}
+                      label="Phone Number"
+                      defaultCountry="us"
+                      value={formData.phoneNumber ?? "123"}
+                      onChange={(value) => {
+                        setFormData({
+                          ...formData,
+                          phoneNumber: value as string,
+                        });
+                      }}
+                      fullWidth
+                      sx={sharedStyles}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    {needsList && (
+                      <>
+                        <Autocomplete
+                          disabled={!editing}
+                          multiple
+                          value={needs}
+                          options={needsList}
+                          getOptionLabel={(option) => option.name as string}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              name="needs"
+                              label="Needs"
+                              fullWidth
+                              sx={sharedStyles}
+                            />
+                          )}
+                          onChange={(_e, value) => {
+                            setNeeds(value ?? []);
+                          }}
+                        />
+                      </>
+                    )}
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      name="comments"
+                      label="Comments"
+                      value={formData.comments}
+                      onChange={handleInputChange}
+                      multiline
+                      rows={4}
+                      fullWidth
+                      sx={sharedStyles}
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
             </CardContent>
@@ -286,8 +359,8 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                   <Box style={{ width: 120 }}> </Box>
                 </ListItem>
                 {activities.map((activity) => {
-                  const org = orgMap.get(activity.organizationId);
-                  const need = needsMap.get(activity.needId);
+                  const org = orgMap.get(activity.organizationId?.toString());
+                  const need = needsMap.get(activity.needId?.toString());
                   if (!org || !need) return null;
 
                   return (
@@ -323,13 +396,15 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                         sx={{ width: 120, textAlign: "center" }}
                       />
                       <Box sx={{ width: 120 }}>
-                        {!(userId && activity.id) ? (
+                        {userId && activity.id ? (
                           <Button
+                            variant="text"
+                            sx={{ whiteSpace: "nowrap" }}
                             onClick={() => {
                               setActivity(activity);
                             }}
                           >
-                            Completed?
+                            Set Complete
                           </Button>
                         ) : (
                           <IconButton
@@ -351,75 +426,123 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                 })}
               </List>
               {orgList && editing && (
-                <>
-                  <Autocomplete
-                    value={null}
-                    disabled={!editing}
-                    options={orgList}
-                    getOptionLabel={(option) =>
-                      `${option.name as string} (${option
-                        .needs!.map((nId) => needsMap.get(nId))
-                        .map((need) => need?.name)
-                        .join(", ")})`
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        name="organizations"
-                        label="Organizations"
-                        fullWidth
-                      />
-                    )}
-                    onChange={(_e, value) => {
-                      if (value) {
-                        setOrganization(value);
-                      }
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setShowActivityModel(true);
                     }}
-                  />
-                </>
+                  >
+                    Add Provider
+                  </Button>
+                </Box>
               )}
             </CardContent>
           </Card>
-          <Grid container>
-            <Grid item xs={10}>
-              {editing && (
-                <DemoContainer
-                  components={["DatePicker"]}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    margin: "8px 20px",
-                  }}
-                >
-                  <DatePicker
-                    label="Effective Date"
-                    value={formData.dateOfBirth}
-                    onChange={handleDateChange}
+
+          <Card
+            sx={{
+              width: "calc(100%  - 16px)",
+              border: "solid 1px #ddd",
+              boxShadow: "none",
+              margin: "16px 0 16px 16px",
+            }}
+          >
+            <CardMedia sx={{ marginLeft: "32px" }}>
+              <h4 style={{ marginBottom: 0 }}></h4>
+            </CardMedia>
+            <CardContent>
+              <List>
+                <ListItem sx={{ borderBottom: "solid 1px #ddd" }}>
+                  <ListItemText primary="Outcome" sx={{ flexGrow: 1000 }} />
+                  <ListItemText
+                    primary="Date"
                     sx={{
-                      ...sharedStyles,
-                      position: "relative",
-                      bottom: "8px",
+                      marginRight: 2,
+                      width: 120,
+                      textAlign: "center",
                     }}
                   />
-                </DemoContainer>
+                </ListItem>
+                {formData.outcome && (
+                  <ListItem
+                    key={formData.outcome}
+                    sx={{ borderBottom: "solid 1px #ddd" }}
+                  >
+                    <ListItemText
+                      primary={formData.outcome}
+                      secondary={formData.outcomeComment}
+                      sx={{ flexGrow: 1000 }}
+                    />
+                    <ListItemText
+                      primary={formData.outcomeDate?.toLocaleDateString()}
+                      sx={{
+                        marginRight: 2,
+                      }}
+                    />
+                  </ListItem>
+                )}
+              </List>
+              {editing && !formData.outcome && (
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setShowOutcomeModal(true);
+                    }}
+                  >
+                    Add Outcome
+                  </Button>
+                </Box>
               )}
-            </Grid>
-            <Grid item xs={2}>
-              <Button
-                onClick={() => {
-                  if (editing) {
-                    setEditing(false);
-                  } else {
-                    setEditing(true);
-                  }
+            </CardContent>
+          </Card>
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 2,
+              alignItems: "center",
+            }}
+          >
+            {editing && (
+              <DemoContainer
+                components={["DatePicker"]}
+                sx={{
+                  top: "10px",
+                  position: "relative",
                 }}
-                variant="contained"
-                sx={{ mt: 2 }}
               >
-                {buttonText} Benificiary
-              </Button>
-            </Grid>
-          </Grid>
+                <DatePicker
+                  label="Effective Date"
+                  value={formData.dateOfBirth}
+                  onChange={handleDateChange}
+                  sx={{
+                    ...sharedStyles,
+                    position: "relative",
+                    bottom: "8px",
+                  }}
+                />
+              </DemoContainer>
+            )}
+            <Button
+              onClick={async (e) => {
+                e.preventDefault();
+
+                if (editing) {
+                  await handleSubmit();
+                  setEditing(false);
+                } else {
+                  setEditing(true);
+                }
+              }}
+              variant="contained"
+              sx={{ mt: 2 }}
+            >
+              {buttonText} beneficiary
+            </Button>
+          </Box>
         </form>
       </Paper>
 
@@ -443,22 +566,22 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
         />
       )}
 
-      {organization && (
+      {showActivityModel && (
         <OrganizationActivityModal
-          needs={
-            (organization.needs?.map((n) => needsMap.get(n)).filter(Boolean) ??
-              []) as Need[]
-          }
+          orgList={orgList!}
           open
-          onChange={(needId, startDate, comments) => {
+          needsMap={needsMap}
+          onChange={(organizationId, needId, startDate, comments) => {
             const alreadyExists = activities.some(
-              (a) => a.organizationId === organization.id && a.needId === needId
+              (a) =>
+                a.organizationId?.toString() === organizationId &&
+                a.needId?.toString() === needId
             );
             if (!alreadyExists) {
               setActivities([
                 ...activities,
                 {
-                  organizationId: organization.id,
+                  organizationId,
                   needId,
                   startDate: new Date(startDate),
                   comments,
@@ -467,7 +590,24 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
             }
           }}
           onClose={() => {
-            setOrganization(null);
+            setShowActivityModel(false);
+          }}
+        />
+      )}
+
+      {showOutcomeModal && (
+        <OutcomeModal
+          open
+          onChange={(outcome, date, comment) => {
+            setFormData({
+              ...formData,
+              outcome,
+              outcomeDate: new Date(date),
+              outcomeComment: comment,
+            });
+          }}
+          onClose={() => {
+            setShowOutcomeModal(false);
           }}
         />
       )}
