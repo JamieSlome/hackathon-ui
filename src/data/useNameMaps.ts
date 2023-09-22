@@ -3,58 +3,63 @@ import { useOrganizationList } from "./useOrganizationList";
 import { useBeneficiaryList } from "./useBeneficiaryList";
 
 export const useNameMaps = () => {
-    const organizationNameMap = {};
-    const beneficiaryNameMap = {};
-    const needNameMap = {};
+  const organizationNameMap: Record<number, string> = {};
+  const beneficiaryNameMap: Record<number, string> = {};
+  const needNameMap: Record<number, string> = {};
 
-    const {
-        data: organizations
-    } = useOrganizationList();
+  const { data: organizations } = useOrganizationList();
 
-    const {
-        data: beneficiaries
-    } = useBeneficiaryList();
+  const { data: beneficiaries } = useBeneficiaryList();
 
-    const {
-        data: needs
-    } = useOrganizationList();
+  const { data: needs } = useOrganizationList();
 
-    useEffect(() => {
-        organizations?.forEach((organization) => {
-            organizationNameMap[organization.id!] = organization.name;
-        });
-    }, [organizations]);
+  useEffect(() => {
+    organizations?.forEach((organization) => {
+      organizationNameMap[organization.id!] = organization.name as string;
+    });
+  }, [organizations]);
 
-    useEffect(() => {
-        needs?.forEach((need) => {
-            needNameMap[need.id!] = need.name;
-        });
-    }, [organizations]);
+  useEffect(() => {
+    needs?.forEach((need) => {
+      needNameMap[need.id!] = need.name as string;
+    });
+  }, [organizations]);
 
-    useEffect(() => {
-        beneficiaries?.forEach((beneficiary) => {
-            beneficiaryNameMap[beneficiary.id!] = `${beneficiary.lastName}, ${beneficiary.firstName}`;
-        });
-    }, [organizations]);
+  useEffect(() => {
+    beneficiaries?.forEach((beneficiary) => {
+      beneficiaryNameMap[
+        beneficiary.id!
+      ] = `${beneficiary.lastName}, ${beneficiary.firstName}`;
+    });
+  }, [organizations]);
 
-    const getOrganizationName = useCallback((id: string) => {
-        return organizationNameMap[id];
-    }, [organizationNameMap]);
+  const getOrganizationName = useCallback(
+    (id: number) => {
+      return organizationNameMap[id];
+    },
+    [organizationNameMap]
+  );
 
-    const getBeneficiaryName = useCallback((id: string) => {
-        return beneficiaryNameMap[id];
-    }, [beneficiaryNameMap]);
+  const getBeneficiaryName = useCallback(
+    (id: number) => {
+      return beneficiaryNameMap[id];
+    },
+    [beneficiaryNameMap]
+  );
 
-    const getNeedName = useCallback((id: string) => {
-        return needNameMap[id];
-    }, [needNameMap]);
+  const getNeedName = useCallback(
+    (id: number) => {
+      return needNameMap[id];
+    },
+    [needNameMap]
+  );
 
-    return {
-        organizationNameMap,
-        beneficiaryNameMap,
-        needNameMap,
-        getOrganizationName,
-        getBeneficiaryName,
-        getNeedName,
-    }
-}
+  return {
+    organizationNameMap,
+    beneficiaryNameMap,
+    needNameMap,
+    getOrganizationName,
+    getBeneficiaryName,
+    getNeedName,
+  };
+};

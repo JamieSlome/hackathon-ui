@@ -9,10 +9,11 @@ import {
   useNavigation,
 } from "react-router-dom";
 import { fakeAuthProvider } from "./auth";
-import { Home } from "./home";
-import { BeneficiaryForm } from "./benficiary";
+import { Beneficiaries } from "./pages/beneficiaries";
+import { BeneficiaryForm } from "./pages/beneficiary";
 import { Layout } from "./components";
 import { Dashboard } from "./dashboard";
+import { Beneficiary } from "./pages/beneficiary/Beneficiary";
 
 const router = createBrowserRouter([
   {
@@ -27,20 +28,24 @@ const router = createBrowserRouter([
         path: "/",
         // loader: protectedLoader,
         Component: Layout,
-        children:[
+        children: [
           {
-            path: "/home",
-            element: <Home />,
+            path: "/beneficiaries",
+            element: <Beneficiaries />,
+          },
+          {
+            path: "/beneficiaries/:id/:tab",
+            element: <Beneficiary />,
+          },
+          {
+            path: "/beneficiaries/new",
+            element: <BeneficiaryForm isNew />,
           },
           {
             path: "/dashboard",
             element: <Dashboard />,
           },
-          {
-            path: "/new",
-            element: <BeneficiaryForm />,
-          },
-        ]
+        ],
       },
       {
         path: "login",
@@ -153,15 +158,14 @@ function LoginPage() {
   );
 }
 
-function protectedLoader({ request }: LoaderFunctionArgs) {
-  // If the user is not logged in and tries to access `/protected`, we redirect
-  // them to `/login` with a `from` parameter that allows login to redirect back
-  // to this page upon successful authentication
-  if (!fakeAuthProvider.isAuthenticated) {
-    let params = new URLSearchParams();
-    params.set("from", new URL(request.url).pathname);
-    return redirect("/login?" + params.toString());
-  }
-  return null;
-}
-
+// function protectedLoader({ request }: LoaderFunctionArgs) {
+//   // If the user is not logged in and tries to access `/protected`, we redirect
+//   // them to `/login` with a `from` parameter that allows login to redirect back
+//   // to this page upon successful authentication
+//   if (!fakeAuthProvider.isAuthenticated) {
+//     let params = new URLSearchParams();
+//     params.set("from", new URL(request.url).pathname);
+//     return redirect("/login?" + params.toString());
+//   }
+//   return null;
+// }
