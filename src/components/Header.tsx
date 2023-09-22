@@ -15,14 +15,12 @@ import logo from '../assets/springboard-logo.png';
 
 const Logo = () => (<img width="150px" src={logo} alt="Springboard Collaborative" />);
 
-const pages = ['Beneficiaries', 'Providers', 'Dashboard'];
+const pages = [{label: 'Beneficiaries', path: 'beneficiaries'}, {label: 'Providers', path: 'providers'}, {label: 'Dashboard', path: 'dashboard'}];
 const settings = ['Logout'];
-
 
 export const Header = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -79,8 +77,8 @@ export const Header = () => {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography>{page}</Typography>
+                <MenuItem key={page.label} onClick={handleCloseNavMenu} href={page.path}>
+                  <Typography>{page.label}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -88,11 +86,12 @@ export const Header = () => {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page.label}
                 onClick={handleCloseNavMenu}
+                href={page.path}
                 sx={{ my: 2, color: 'white', display: 'block', pb: 0, mb: '8px' }}
               >
-                {page}
+                {page.label}
               </Button>
             ))}
           </Box>
