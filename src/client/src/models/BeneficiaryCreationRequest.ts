@@ -16,87 +16,82 @@ import { exists, mapValues } from "../runtime";
 /**
  *
  * @export
- * @interface Beneficiary
+ * @interface BeneficiaryCreationRequest
  */
-export interface Beneficiary {
-  /**
-   *
-   * @type {number}
-   * @memberof Beneficiary
-   */
-  id?: number;
+export interface BeneficiaryCreationRequest {
   /**
    *
    * @type {string}
-   * @memberof Beneficiary
+   * @memberof BeneficiaryCreationRequest
    */
   firstName?: string;
   /**
    *
    * @type {string}
-   * @memberof Beneficiary
+   * @memberof BeneficiaryCreationRequest
    */
   lastName?: string;
   /**
    *
    * @type {Date}
-   * @memberof Beneficiary
+   * @memberof BeneficiaryCreationRequest
    */
   dateOfBirth?: Date;
   /**
    *
    * @type {string}
-   * @memberof Beneficiary
+   * @memberof BeneficiaryCreationRequest
    */
   identity?: string;
   /**
    *
    * @type {string}
-   * @memberof Beneficiary
+   * @memberof BeneficiaryCreationRequest
    */
   phoneNumber?: string;
   /**
    *
    * @type {number}
-   * @memberof Beneficiary
+   * @memberof BeneficiaryCreationRequest
    */
   cabinNumber?: number;
   /**
    *
    * @type {Array<number>}
-   * @memberof Beneficiary
+   * @memberof BeneficiaryCreationRequest
    */
   needs?: Array<number>;
   /**
    *
    * @type {string}
-   * @memberof Beneficiary
+   * @memberof BeneficiaryCreationRequest
    */
   comments?: string;
 }
 
 /**
- * Check if a given object implements the Beneficiary interface.
+ * Check if a given object implements the BeneficiaryCreationRequest interface.
  */
-export function instanceOfBeneficiary(value: object): boolean {
+export function instanceOfBeneficiaryCreationRequest(value: object): boolean {
   let isInstance = true;
 
   return isInstance;
 }
 
-export function BeneficiaryFromJSON(json: any): Beneficiary {
-  return BeneficiaryFromJSONTyped(json, false);
+export function BeneficiaryCreationRequestFromJSON(
+  json: any
+): BeneficiaryCreationRequest {
+  return BeneficiaryCreationRequestFromJSONTyped(json, false);
 }
 
-export function BeneficiaryFromJSONTyped(
+export function BeneficiaryCreationRequestFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): Beneficiary {
+): BeneficiaryCreationRequest {
   if (json === undefined || json === null) {
     return json;
   }
   return {
-    id: !exists(json, "id") ? undefined : json["id"],
     firstName: !exists(json, "firstName") ? undefined : json["firstName"],
     lastName: !exists(json, "lastName") ? undefined : json["lastName"],
     dateOfBirth: !exists(json, "dateOfBirth")
@@ -110,7 +105,9 @@ export function BeneficiaryFromJSONTyped(
   };
 }
 
-export function BeneficiaryToJSON(value?: Beneficiary | null): any {
+export function BeneficiaryCreationRequestToJSON(
+  value?: BeneficiaryCreationRequest | null
+): any {
   if (value === undefined) {
     return undefined;
   }
@@ -118,7 +115,6 @@ export function BeneficiaryToJSON(value?: Beneficiary | null): any {
     return null;
   }
   return {
-    id: value.id,
     firstName: value.firstName,
     lastName: value.lastName,
     dateOfBirth:

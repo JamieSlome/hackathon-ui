@@ -16,57 +16,50 @@ import { exists, mapValues } from "../runtime";
 /**
  *
  * @export
- * @interface Need
+ * @interface NeedCreationRequest
  */
-export interface Need {
-  /**
-   *
-   * @type {number}
-   * @memberof Need
-   */
-  id?: number;
+export interface NeedCreationRequest {
   /**
    *
    * @type {string}
-   * @memberof Need
+   * @memberof NeedCreationRequest
    */
   name?: string;
   /**
    *
    * @type {string}
-   * @memberof Need
+   * @memberof NeedCreationRequest
    */
   description?: string;
   /**
    *
    * @type {string}
-   * @memberof Need
+   * @memberof NeedCreationRequest
    */
   alternativeName?: string;
 }
 
 /**
- * Check if a given object implements the Need interface.
+ * Check if a given object implements the NeedCreationRequest interface.
  */
-export function instanceOfNeed(value: object): boolean {
+export function instanceOfNeedCreationRequest(value: object): boolean {
   let isInstance = true;
 
   return isInstance;
 }
 
-export function NeedFromJSON(json: any): Need {
-  return NeedFromJSONTyped(json, false);
+export function NeedCreationRequestFromJSON(json: any): NeedCreationRequest {
+  return NeedCreationRequestFromJSONTyped(json, false);
 }
 
-export function NeedFromJSONTyped(
+export function NeedCreationRequestFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): Need {
+): NeedCreationRequest {
   if (json === undefined || json === null) {
     return json;
   }
   return {
-    id: !exists(json, "id") ? undefined : json["id"],
     name: !exists(json, "name") ? undefined : json["name"],
     description: !exists(json, "description") ? undefined : json["description"],
     alternativeName: !exists(json, "alternativeName")
@@ -75,7 +68,9 @@ export function NeedFromJSONTyped(
   };
 }
 
-export function NeedToJSON(value?: Need | null): any {
+export function NeedCreationRequestToJSON(
+  value?: NeedCreationRequest | null
+): any {
   if (value === undefined) {
     return undefined;
   }
@@ -83,7 +78,6 @@ export function NeedToJSON(value?: Need | null): any {
     return null;
   }
   return {
-    id: value.id,
     name: value.name,
     description: value.description,
     alternativeName: value.alternativeName,
