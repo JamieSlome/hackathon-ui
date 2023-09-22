@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import { Beneficiary } from '../client/src';
 import { Button, Grid, Paper, TextField, Typography } from '@mui/material';
-import { DatePicker } from '@material-ui/pickers';
 
-interface Props {
-  onSubmit: (beneficiary: Beneficiary) => void;
-}
 
-const BeneficiaryForm: React.FC<Props> = ({ onSubmit }) => {
+export const BeneficiaryForm: React.FC<{}> = () => {
   const [formData, setFormData] = useState<Omit<Beneficiary, "dateOfBirth"> & { dateOfBirth: Date | null }>({
     id: 0,
     firstName: '',
@@ -31,7 +27,7 @@ const BeneficiaryForm: React.FC<Props> = ({ onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit(formData as Beneficiary);
+    // onSubmit(formData as Beneficiary);
   };
 
   return (
@@ -60,7 +56,7 @@ const BeneficiaryForm: React.FC<Props> = ({ onSubmit }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <DatePicker
+            {/* <DatePicker
               name="dateOfBirth"
               label="Date of Birth"
               value={formData.dateOfBirth}
@@ -68,7 +64,7 @@ const BeneficiaryForm: React.FC<Props> = ({ onSubmit }) => {
               format="yyyy-MM-dd"
               inputVariant="outlined"
               fullWidth
-            />
+            /> */}
           </Grid>
           <Grid item xs={12}>
             <TextField
@@ -119,5 +115,3 @@ const BeneficiaryForm: React.FC<Props> = ({ onSubmit }) => {
     </Paper>
   );
 };
-
-export default BeneficiaryForm;
