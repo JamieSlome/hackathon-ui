@@ -12,6 +12,7 @@ import {
 import { fakeAuthProvider } from "./auth";
 import { Home } from "./home";
 import AppNav from "./components/AppNav";
+import { BeneficiaryForm } from "./benficiary";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
           {
             path: "/home",
             element: <Home />,
+          },
+          {
+            path: "/new",
+            element: <BeneficiaryForm />,
           },
         ]
       },
