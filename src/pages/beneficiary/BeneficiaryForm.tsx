@@ -25,7 +25,13 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { Dayjs } from "dayjs";
 import React, { useMemo, useState } from "react";
-import { Activity, ActivityApi, BeneficiaryApi, Need } from "../../client/src";
+import {
+  Activity,
+  ActivityApi,
+  BeneficiaryApi,
+  Configuration,
+  Need,
+} from "../../client/src";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
@@ -37,6 +43,7 @@ import { useBeneficiaryData } from "../../data/useBeneficiaryData";
 import { ActivityCompleteModal } from "./modals/ActivityCompleteModal";
 import { OrganizationActivityModal } from "./modals/OrganizationActivityModal";
 import { OutcomeModal } from "./modals/OutcomeModal";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   isNew?: boolean;
@@ -72,6 +79,8 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const navigate = useNavigate();
+
   const handleSubmit = async () => {
     // onSubmit(formData);
     try {
@@ -96,29 +105,69 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
           });
       }
 
-      const beneficiaryApi = new BeneficiaryApi();
-      const activitiesApi = new ActivityApi();
+      const beneficiaryApi = new BeneficiaryApi(
+        new Configuration({
+          basePath: "https://pttmuyg4gp.us-east-1.awsapprunner.com",
+        })
+      );
+      const activitiesApi = new ActivityApi(
+        new Configuration({
+          basePath: "https://pttmuyg4gp.us-east-1.awsapprunner.com",
+        })
+      );
+      let beneficiaryId = userId;
+      const {
+        outcome,
+        outcomeComment,
+        outcomeDate,
+        ...beneficiaryCreationRequest
+      } = formData;
+      if (isNew) {
+        const resp = await beneficiaryApi.createBeneficiary({
+          beneficiaryCreationRequest: {
+            ...beneficiaryCreationRequest,
+            dateOfBirth: formData.dateOfBirth?.toDate(),
+            needs: needs.map((n) => n.id!),
+          },
+        });
+        beneficiaryId = resp.id;
+      } else if (outcome && outcomeDate) {
+        await beneficiaryApi.createBeneficiaryOutcome({
+          id: userId!,
+          createBeneficiaryOutcomeRequest: {
+            outcomeEvent: outcome,
+            outcomeComment,
+            outcomeDate,
+          },
+        });
+      }
 
-      const { outcome, outcomeComment, outcomeDate, ...beneficiary } = formData;
-      await beneficiaryApi.createBeneficiary({
-        beneficiaryCreationRequest: {
-          ...beneficiary,
-          dateOfBirth: beneficiary.dateOfBirth?.toDate(),
-        },
-      });
       if (newActivities?.length) {
         await Promise.all(
           newActivities.map((activityCreationRequest) =>
-            activitiesApi.createActivity({ activityCreationRequest })
+            activitiesApi.createActivity({
+              activityCreationRequest: {
+                ...activityCreationRequest,
+                beneficiaryId,
+              },
+            })
           )
         );
       }
       if (updatedActivities?.length) {
         await Promise.all(
           updatedActivities.map((activityCreationRequest) =>
-            activitiesApi.createActivity({ activityCreationRequest })
+            activitiesApi.createActivity({
+              activityCreationRequest: {
+                ...activityCreationRequest,
+                beneficiaryId,
+              },
+            })
           )
         );
+      }
+      if (isNew) {
+        // navigate(`/beneficiaries/${resp.id}/info`);
       }
     } finally {
       setSubmitting(false);
@@ -140,7 +189,9 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
     buttonText = editing ? "Save" : "Edit";
   }
   const randomImageId = useMemo(() => {
-    return ~~(50 + Math.random() * 50);
+    return isNew
+      ? ~~(50 + Math.random() * 50)
+      : formData.id?.split("-")[1]?.charCodeAt(0) ?? 10;
   }, []);
 
   return (
@@ -183,8 +234,10 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                 >
                   <img
                     src={`https://randomuser.me/api/portraits/${
-                      formData.identity?.startsWith("f") ? "women" : "men"
-                    }/${isNew ? randomImageId : formData.id}.jpg`}
+                      formData.identity?.toLocaleLowerCase().startsWith("f")
+                        ? "women"
+                        : "men"
+                    }/${randomImageId}.jpg`}
                     height={200}
                     width={200}
                   />
@@ -229,8 +282,7 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                   <Grid item xs={3}>
                     <Autocomplete
                       disabled={!editing}
-                      freeSolo
-                      options={["Male", "Female", "Non-binary"]}
+                      options={["M", "F", "Non-binary"]}
                       renderInput={(params) => (
                         <TextField
                           name="identity"
@@ -239,6 +291,15 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                           sx={sharedStyles}
                         />
                       )}
+                      value={formData.identity}
+                      onChange={(_e, identity) => {
+                        if (identity) {
+                          setFormData({
+                            ...formData,
+                            identity,
+                          });
+                        }
+                      }}
                       fullWidth
                     />
                   </Grid>

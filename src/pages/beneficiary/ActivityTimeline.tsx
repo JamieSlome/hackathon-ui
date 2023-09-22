@@ -44,6 +44,11 @@ export const ActivityTimeline = ({
             ?.name as string;
           const org = orgMap.get(activity.organizationId?.toString())
             ?.name as string;
+
+          debugger;
+
+          if (!need || !org) return null;
+
           return (
             <TimelineItem key={activity.id}>
               <TimelineOppositeContent
