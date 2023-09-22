@@ -1,7 +1,6 @@
 import type { LoaderFunctionArgs } from "react-router-dom";
 import {
   Form,
-  Outlet,
   RouterProvider,
   createBrowserRouter,
   redirect,
