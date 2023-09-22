@@ -8,24 +8,26 @@ import {
 import { useQuery } from "react-query";
 
 const randomStatus = () => {
-  return ["IN_PROGRESS", "COMPLETED"][Math.floor(Math.random() * 2)];
+  return ["IN_PROGRESS", "COMPLETED"][
+    Math.floor(Math.random() * 2)
+  ] as ActivityStatus;
 };
 
 const mockActivities: Activity[] = Array.from({ length: 30 }, (_, i) => ({
   id: i + 1,
   organizationId: i + 1,
   beneficiaryId: i + 1,
-  needId: i % 2 ? 1 : 2,
+  needId: i + 1,
   startDate: new Date(),
   endDate: new Date(),
   status: randomStatus(),
-  comments: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  comments: `This is comment ${i + 1}`,
 }));
 
 export const useActivityList = (req?: ListActivitiesRequest) => {
   const [client] = useState(new ActivityApi());
 
-  const { data, isLoading } = useQuery(["needs", req], async () => {
+  const { data, isLoading } = useQuery(["activities", req], async () => {
     if (!req?.beneficiaryId) {
       return [];
     }

@@ -1,7 +1,14 @@
-import ArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import ArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Avatar, Card, CardContent, Stack, SvgIcon, Typography } from '@mui/material';
-import { ReactNode } from 'react';
+import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import {
+  Avatar,
+  Card,
+  CardContent,
+  Stack,
+  SvgIcon,
+  Typography,
+} from "@mui/material";
+import { ReactNode } from "react";
 
 interface DataCardProps {
   difference?: number;
@@ -14,7 +21,15 @@ interface DataCardProps {
 }
 
 export const DataCard = (props: DataCardProps) => {
-  const { difference, title, positive = false, sx, value, icon, color='success.main' } = props;
+  const {
+    difference,
+    title,
+    positive = false,
+    sx,
+    value,
+    icon,
+    color = "success.main",
+  } = props;
 
   return (
     <Card sx={sx}>
@@ -26,57 +41,35 @@ export const DataCard = (props: DataCardProps) => {
           spacing={3}
         >
           <Stack spacing={1}>
-            <Typography
-              color="text.secondary"
-              variant="overline"
-            >
+            <Typography color="text.secondary" variant="overline">
               {title}
             </Typography>
-            <Typography variant="h4">
-              {value}
-            </Typography>
+            <Typography variant="h4">{value}</Typography>
           </Stack>
           <Avatar
             sx={{
               backgroundColor: color,
               height: 56,
-              width: 56
+              width: 56,
             }}
           >
-            <SvgIcon>
-              {icon}
-            </SvgIcon>
+            <SvgIcon>{icon}</SvgIcon>
           </Avatar>
         </Stack>
         {difference && (
-          <Stack
-            alignItems="center"
-            direction="row"
-            spacing={2}
-            sx={{ mt: 2 }}
-          >
-            <Stack
-              alignItems="center"
-              direction="row"
-              spacing={0.5}
-            >
-              <SvgIcon
-                color={positive ? 'success' : 'error'}
-                fontSize="small"
-              >
+          <Stack alignItems="center" direction="row" spacing={2} sx={{ mt: 2 }}>
+            <Stack alignItems="center" direction="row" spacing={0.5}>
+              <SvgIcon color={positive ? "success" : "error"} fontSize="small">
                 {positive ? <ArrowUpIcon /> : <ArrowDownIcon />}
               </SvgIcon>
               <Typography
-                color={positive ? 'success.main' : 'error.main'}
+                color={positive ? "success.main" : "error.main"}
                 variant="body2"
               >
                 {difference}%
               </Typography>
             </Stack>
-            <Typography
-              color="text.secondary"
-              variant="caption"
-            >
+            <Typography color="text.secondary" variant="caption">
               Since last month
             </Typography>
           </Stack>
