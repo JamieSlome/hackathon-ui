@@ -1,7 +1,6 @@
 import { Beneficiary } from "../client/src";
-import { HomeTable } from "./Table";
 
-const users = [
+export const users = [
   {
     id: 1,
     firstName: "John",
@@ -145,9 +144,5 @@ const users = [
 ].map((b) => ({
   ...b,
   dateOfBirth: new Date(b.dateOfBirth),
-  needs: b.needs.map((need) => ({ need })),
+  needs: b.needs.map((need) => need.id),
 })) as Required<Beneficiary>[];
-
-export const Home = () => {
-  return <HomeTable data={users} />;
-};

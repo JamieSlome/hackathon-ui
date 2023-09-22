@@ -1,1 +1,2 @@
-export * from './cabins'
+export * from "./cabins";
+export * from "./mockUsers";

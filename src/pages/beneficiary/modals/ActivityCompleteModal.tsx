@@ -1,24 +1,23 @@
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
+import { dateToDatePickerFormat } from "../utils";
 
 interface Props {
+  comments: string;
   open: boolean;
-  onChange: (endDate: string) => void;
+  onChange: (endDate: string, comments: string) => void;
   onClose: () => void;
 }
-
-const today = [
-  new Date().getFullYear(),
-  (new Date().getMonth() + 1).toString().padStart(2, "0"),
-  new Date().getDate().toString().padStart(2, "0"),
-].join("-");
+const today = dateToDatePickerFormat(new Date());
 
 export const ActivityCompleteModal: React.FC<Props> = ({
+  comments: initialComments,
   open,
   onChange,
   onClose,
 }) => {
   const [endDate, setEndDate] = useState<string>(today);
+  const [comments, setComments] = useState<string>(initialComments);
 
   const handleendDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEndDate(event.target.value);
@@ -26,7 +25,7 @@ export const ActivityCompleteModal: React.FC<Props> = ({
 
   const handleSubmit = () => {
     if (endDate) {
-      onChange(endDate);
+      onChange(endDate, comments);
     }
     onClose();
   };
@@ -46,7 +45,7 @@ export const ActivityCompleteModal: React.FC<Props> = ({
         }}
       >
         <Typography variant="h6" gutterBottom>
-          Select Emd Date
+          Select End Date
         </Typography>
         <TextField
           label="Start Date"
@@ -57,6 +56,17 @@ export const ActivityCompleteModal: React.FC<Props> = ({
           margin="normal"
           InputLabelProps={{ shrink: true }}
           defaultValue={today}
+        />
+        <TextField
+          name="comments"
+          label="Comments"
+          value={comments}
+          onChange={(e) => {
+            setComments(e.target.value);
+          }}
+          multiline
+          rows={4}
+          fullWidth
         />
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
           <Button onClick={onClose} sx={{ mr: 1 }}>

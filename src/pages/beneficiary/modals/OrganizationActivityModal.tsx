@@ -7,12 +7,13 @@ import {
   Button,
   MenuItem,
 } from "@mui/material";
-import { Need } from "../client/src";
+import { Need } from "../../../client/src";
+import { dateToDatePickerFormat } from "../utils";
 
 interface Props {
   needs: Need[];
   open: boolean;
-  onChange: (needId: number, startDate: string) => void;
+  onChange: (needId: number, startDate: string, comments: string) => void;
   onClose: () => void;
 }
 
@@ -21,11 +22,7 @@ interface NeedOption {
   label: string;
 }
 
-const today = [
-  new Date().getFullYear(),
-  (new Date().getMonth() + 1).toString().padStart(2, "0"),
-  new Date().getDate().toString().padStart(2, "0"),
-].join("-");
+const today = dateToDatePickerFormat(new Date());
 
 export const OrganizationActivityModal: React.FC<Props> = ({
   needs,
@@ -35,6 +32,7 @@ export const OrganizationActivityModal: React.FC<Props> = ({
 }) => {
   const [selectedNeed, setSelectedNeed] = useState<number | null>(null);
   const [startDate, setStartDate] = useState<string>(today);
+  const [comments, setComments] = useState<string>("");
 
   const needOptions: NeedOption[] = needs.map((need) => ({
     value: need.id!,
@@ -53,7 +51,7 @@ export const OrganizationActivityModal: React.FC<Props> = ({
 
   const handleSubmit = () => {
     if (selectedNeed && startDate) {
-      onChange(selectedNeed, startDate);
+      onChange(selectedNeed, startDate, comments);
     }
     onClose();
   };
@@ -98,6 +96,17 @@ export const OrganizationActivityModal: React.FC<Props> = ({
           defaultValue={today}
           margin="normal"
           InputLabelProps={{ shrink: true }}
+        />
+        <TextField
+          name="comments"
+          label="Comments"
+          value={comments}
+          onChange={(e) => {
+            setComments(e.target.value);
+          }}
+          multiline
+          rows={4}
+          fullWidth
         />
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
           <Button onClick={onClose} sx={{ mr: 1 }}>

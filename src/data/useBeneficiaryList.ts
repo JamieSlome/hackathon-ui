@@ -25,15 +25,12 @@ function generateBeneficiaries(): Beneficiary[] {
 const mockBeneficiaries = generateBeneficiaries();
 
 export const useBeneficiaryList = () => {
-    const [client] = useState(new BeneficiaryApi());
+  const [client] = useState(new BeneficiaryApi());
 
-    const {
-        data,
-        isLoading,
-    } = useQuery(['needs'], async () => {
-        // return client.listBeneficiaries();
-        return mockBeneficiaries;
-    });
+  const { data, isLoading } = useQuery(["needs"], async () => {
+    // return client.listBeneficiaries();
+    return mockBeneficiaries;
+  });
 
-    return { data, isLoading };
-}
+  return { data, isLoading };
+};

@@ -23,150 +23,27 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { Dayjs } from "dayjs";
 import React, { useState } from "react";
-import { Activity, Beneficiary, Need, Organization } from "../client/src";
+import { Activity, Need, Organization } from "../../client/src";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-import { useQuery } from "@tanstack/react-query";
 import PhoneNumberTextField from "material-ui-phone-number";
 
 import { DeleteOutline } from "@mui/icons-material";
-import { cabins } from "../constants";
-import { OrganizationActivityModal } from "./OrganizationActivityModal";
-import { ActivityCompleteModal } from "./ActivityCompleteModal";
+import { cabins } from "../../constants";
+import { useBeneficiaryData } from "../../data/useBeneficiaryData";
+import { ActivityCompleteModal } from "./modals/ActivityCompleteModal";
+import { OrganizationActivityModal } from "./modals/OrganizationActivityModal";
 
 interface Props {
+  isNew?: boolean;
   userId?: number;
 }
 
-const _organizations: Organization[] = [
-  {
-    id: 1,
-    name: "Organization 1",
-    streetAddress: "123 Main St",
-    state: "CA",
-    zipcode: "12345",
-    phoneNumber: "555-1234",
-    description: "This is organization 1",
-    needs: [1, 2],
-  },
-  {
-    id: 2,
-    name: "Organization 2",
-    streetAddress: "456 Elm St",
-    state: "NY",
-    zipcode: "67890",
-    phoneNumber: "555-5678",
-    description: "This is organization 2",
-    needs: [1, 2],
-  },
-  {
-    id: 3,
-    name: "Organization 3",
-    streetAddress: "789 Oak St",
-    state: "TX",
-    zipcode: "23456",
-    phoneNumber: "555-9012",
-    description: "This is organization 3",
-    needs: [2],
-  },
-  {
-    id: 4,
-    name: "Organization 4",
-    streetAddress: "321 Maple St",
-    state: "FL",
-    zipcode: "78901",
-    phoneNumber: "555-3456",
-    description: "This is organization 4",
-    needs: [1],
-  },
-  {
-    id: 5,
-    name: "Organization 5",
-    streetAddress: "654 Pine St",
-    state: "WA",
-    zipcode: "23456",
-    phoneNumber: "555-7890",
-    description: "This is organization 5",
-    needs: [3],
-  },
-];
-
-const useData = (userId?: number) => {
-  const [loading, setLoading] = useState(!!userId);
-  const [formData, setFormData] = useState<Beneficiary>({
-    id: 0,
-    firstName: "",
-    lastName: "",
-    dateOfBirth: undefined,
-    identity: "",
-    phoneNumber: "",
-    cabinNumber: 1,
-    needs: [],
-    comments: "",
-  });
-
-  const { data: needsList } = useQuery({
-    queryKey: ["needsList"],
-    queryFn: () => {
-      // const api = new NeedApi();
-      return [
-        { name: "Housing", id: 1 },
-        { name: "Opiate Addiction", id: 2 },
-        { name: "Job Training", id: 1 },
-      ] as Need[];
-      // return api.listNeeds();
-    },
-  });
-
-  const { data: activitiesList } = useQuery({
-    queryKey: ["needsList"],
-    queryFn: () => {
-      // const api = new NeedApi();
-      return [
-        { name: "Housing", id: 1 },
-        { name: "Opiate Addiction", id: 2 },
-        { name: "Job Training", id: 1 },
-      ] as Need[];
-      // return api.listNeeds();
-    },
-  });
-
-  const { data: orgList } = useQuery({
-    queryKey: ["orgList"],
-    queryFn: () => {
-      // const api = new OrganizationApi();
-      return _organizations;
-      // return api.listNeeds();
-    },
-  });
-  const needsMap = new Map(needsList?.map((n) => [n.id, n]));
-  const orgMap = new Map(orgList?.map((org) => [org.id, org]));
-  const [activities, setActivities] = useState<Activity[]>([]);
-
-  React.useEffect(() => {
-    if (activitiesList) {
-      setActivities(activitiesList);
-    }
-  }, [activitiesList]);
-
-  return {
-    loading,
-    setLoading,
-    formData,
-    setFormData,
-    setActivities,
-    needsList,
-    orgList,
-    activities,
-    needsMap,
-    orgMap,
-  };
-};
-
-export const BeneficiaryForm: React.FC<Props> = ({ userId }) => {
-  const [editing, setEditing] = useState(!userId);
+export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
+  const [editing, setEditing] = useState(isNew);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [activity, setActivity] = useState<Activity | null>(null);
@@ -180,10 +57,10 @@ export const BeneficiaryForm: React.FC<Props> = ({ userId }) => {
     activities,
     needsMap,
     orgMap,
-  } = useData(userId);
+  } = useBeneficiaryData(userId);
 
-  const handleDateChange = (date: Date | null) => {
-    setFormData({ ...formData, dateOfBirth: date ?? undefined });
+  const handleDateChange = (date: Dayjs | null) => {
+    setFormData({ ...formData, dateOfBirth: date ?? null });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -195,8 +72,6 @@ export const BeneficiaryForm: React.FC<Props> = ({ userId }) => {
     e.preventDefault();
     // onSubmit(formData);
   };
-
-  React.useEffect(() => {}, [userId]);
 
   const sharedStyles: SxProps = editing
     ? {}
@@ -217,7 +92,9 @@ export const BeneficiaryForm: React.FC<Props> = ({ userId }) => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Paper sx={{ p: 2 }}>
         <Typography variant="h4" gutterBottom>
-          Beneficiary Form
+          {isNew
+            ? "Beneficiary Intake"
+            : `${formData.firstName} ${formData.lastName}`}
         </Typography>
         <form onSubmit={handleSubmit}>
           <Card
@@ -358,6 +235,18 @@ export const BeneficiaryForm: React.FC<Props> = ({ userId }) => {
                     </>
                   )}
                 </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    name="comments"
+                    label="Comments"
+                    value={formData.comments}
+                    onChange={handleInputChange}
+                    multiline
+                    rows={4}
+                    fullWidth
+                    sx={sharedStyles}
+                  />
+                </Grid>
               </Grid>
             </CardContent>
           </Card>
@@ -370,7 +259,7 @@ export const BeneficiaryForm: React.FC<Props> = ({ userId }) => {
             }}
           >
             <CardMedia sx={{ marginLeft: "32px" }}>
-              <h4 style={{ marginBottom: 0 }}>Active Providers</h4>
+              <h4 style={{ marginBottom: 0 }}>Providers</h4>
             </CardMedia>
             <CardContent>
               <List>
@@ -491,27 +380,6 @@ export const BeneficiaryForm: React.FC<Props> = ({ userId }) => {
               )}
             </CardContent>
           </Card>
-          <Card
-            sx={{
-              width: "calc(100%  - 16px)",
-              border: "solid 1px #ddd",
-              boxShadow: "none",
-              margin: "16px 0 16px 16px",
-            }}
-          >
-            <CardContent>
-              <TextField
-                name="comments"
-                label="Comments"
-                value={formData.comments}
-                onChange={handleInputChange}
-                multiline
-                rows={4}
-                fullWidth
-                sx={sharedStyles}
-              />
-            </CardContent>
-          </Card>
           <Grid container>
             <Grid item xs={10}>
               {editing && (
@@ -557,12 +425,13 @@ export const BeneficiaryForm: React.FC<Props> = ({ userId }) => {
 
       {activity && (
         <ActivityCompleteModal
+          comments={activity.comments as string}
           open
-          onChange={(endDate) => {
+          onChange={(endDate, comments) => {
             setActivities(
               activities.map((a) => {
                 if (a.id === activity.id) {
-                  return { ...a, endDate: new Date(endDate) };
+                  return { ...a, endDate: new Date(endDate), comments };
                 }
                 return a;
               })
@@ -581,7 +450,7 @@ export const BeneficiaryForm: React.FC<Props> = ({ userId }) => {
               []) as Need[]
           }
           open
-          onChange={(needId, startDate) => {
+          onChange={(needId, startDate, comments) => {
             const alreadyExists = activities.some(
               (a) => a.organizationId === organization.id && a.needId === needId
             );
@@ -592,6 +461,7 @@ export const BeneficiaryForm: React.FC<Props> = ({ userId }) => {
                   organizationId: organization.id,
                   needId,
                   startDate: new Date(startDate),
+                  comments,
                 },
               ]);
             }

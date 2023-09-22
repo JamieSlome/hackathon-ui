@@ -15,7 +15,8 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import React, { useState } from "react";
-import { Beneficiary } from "../client/src";
+import { Beneficiary } from "../../client/src";
+import { Link } from "react-router-dom";
 
 interface TableProps {
   data: Required<Beneficiary>[];
@@ -45,7 +46,7 @@ function getAge(birthDate: Date): number {
   return age;
 }
 
-export const HomeTable: React.FC<TableProps> = ({ data }) => {
+export const BeneficiariesTable: React.FC<TableProps> = ({ data }) => {
   const [filter, setFilter] = useState({
     ageRange: [-Infinity, Infinity],
     age: "",
@@ -68,18 +69,18 @@ export const HomeTable: React.FC<TableProps> = ({ data }) => {
         person.firstName.toLowerCase().includes(filter.name.toLowerCase()) ||
         person.lastName.toLowerCase().includes(filter.name.toLowerCase())) &&
       (filter.sex === "" ||
-        person.identity.toLowerCase().includes(filter.sex.toLowerCase())) &&
-      (filter.needs === "" ||
-        person.needs.some(({ need }) =>
-          need?.name?.toLowerCase().includes(filter.needs.toLowerCase())
-        ))
+        person.identity.toLowerCase().includes(filter.sex.toLowerCase())) //&&
+      // (filter.needs === "" ||
+      //   person.needs.some((needId) =>
+      //     need?.name?.toLowerCase().includes(filter.needs.toLowerCase())
+      //   ))
     );
   });
 
   const sexes = [...new Set(data.map((d) => d.identity))];
 
   return (
-    <div style={{ width: 1200 }}>
+    <>
       <Box
         sx={{
           display: "flex",
@@ -192,9 +193,7 @@ export const HomeTable: React.FC<TableProps> = ({ data }) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
+              <TableCell>Name</TableCell>
               <TableCell>Date of Birth</TableCell>
               <TableCell>Identity</TableCell>
               <TableCell>Phone Number</TableCell>
@@ -206,9 +205,11 @@ export const HomeTable: React.FC<TableProps> = ({ data }) => {
           <TableBody>
             {filteredData.map((beneficiary) => (
               <TableRow key={beneficiary.id}>
-                <TableCell>{beneficiary.id}</TableCell>
-                <TableCell>{beneficiary.firstName}</TableCell>
-                <TableCell>{beneficiary.lastName}</TableCell>
+                <TableCell>
+                  <Link to={`/beneficiaries/${beneficiary.id}/info`}>
+                    {beneficiary.firstName} {beneficiary.lastName}
+                  </Link>
+                </TableCell>
                 <TableCell>{`${new Date(
                   beneficiary.dateOfBirth
                 ).toLocaleDateString()} (${getAge(
@@ -218,12 +219,8 @@ export const HomeTable: React.FC<TableProps> = ({ data }) => {
                 <TableCell>{beneficiary.phoneNumber}</TableCell>
                 <TableCell>{beneficiary.cabinNumber}</TableCell>
                 <TableCell>
-                  {beneficiary.needs.filter(Boolean).map(({ need }) => (
-                    <Chip
-                      key={need!.id}
-                      label={need!.name}
-                      sx={{ marginRight: 1 }}
-                    />
+                  {beneficiary.needs.filter(Boolean).map((needId) => (
+                    <Chip key={needId} label={needId} sx={{ marginRight: 1 }} />
                   ))}
                 </TableCell>
                 <TableCell>{beneficiary.comments}</TableCell>
@@ -232,6 +229,6 @@ export const HomeTable: React.FC<TableProps> = ({ data }) => {
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </>
   );
 };
