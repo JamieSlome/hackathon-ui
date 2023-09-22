@@ -1,7 +1,6 @@
 import type { LoaderFunctionArgs } from "react-router-dom";
 import {
   Form,
-  Outlet,
   RouterProvider,
   createBrowserRouter,
   redirect,
@@ -13,6 +12,7 @@ import { fakeAuthProvider } from "./auth";
 import { Home } from "./home";
 import { BeneficiaryForm } from "./benficiary";
 import { Layout } from "./components";
+import { Dashboard } from "./dashboard";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +31,10 @@ const router = createBrowserRouter([
           {
             path: "/home",
             element: <Home />,
+          },
+          {
+            path: "/dashboard",
+            element: <Dashboard />,
           },
           {
             path: "/new",
