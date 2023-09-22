@@ -11,8 +11,8 @@ import {
 } from "react-router-dom";
 import { fakeAuthProvider } from "./auth";
 import { Home } from "./home";
-import AppNav from "./components/AppNav";
 import { BeneficiaryForm } from "./benficiary";
+import { Layout } from "./components";
 
 const router = createBrowserRouter([
   {
@@ -22,12 +22,11 @@ const router = createBrowserRouter([
       // Our root route always provides the user, if logged in
       return { user: fakeAuthProvider.username };
     },
-    Component: Outlet,
     children: [
       {
         path: "/",
-        loader: protectedLoader,
-        Component: AppNav,
+        // loader: protectedLoader,
+        Component: Layout,
         children:[
           {
             path: "/home",
