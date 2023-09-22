@@ -115,26 +115,54 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
           basePath: "https://pttmuyg4gp.us-east-1.awsapprunner.com",
         })
       );
+      let beneficiaryId = userId;
+      const {
+        outcome,
+        outcomeComment,
+        outcomeDate,
+        ...beneficiaryCreationRequest
+      } = formData;
+      if (isNew) {
+        const resp = await beneficiaryApi.createBeneficiary({
+          beneficiaryCreationRequest: {
+            ...beneficiaryCreationRequest,
+            dateOfBirth: formData.dateOfBirth?.toDate(),
+            needs: needs.map((n) => n.id!),
+          },
+        });
+        beneficiaryId = resp.id;
+      } else if (outcome && outcomeDate) {
+        await beneficiaryApi.createBeneficiaryOutcome({
+          id: userId!,
+          createBeneficiaryOutcomeRequest: {
+            outcomeEvent: outcome,
+            outcomeComment,
+            outcomeDate,
+          },
+        });
+      }
 
-      // const resp = await beneficiaryApi.createBeneficiary({
-      //   beneficiaryCreationRequest: {
-      //     ...formData,
-      //     dateOfBirth: formData.dateOfBirth?.toDate(),
-      //     needs: needs.map((n) => n.id!),
-      //   },
-      // });
-      debugger;
       if (newActivities?.length) {
         await Promise.all(
           newActivities.map((activityCreationRequest) =>
-            activitiesApi.createActivity({ activityCreationRequest })
+            activitiesApi.createActivity({
+              activityCreationRequest: {
+                ...activityCreationRequest,
+                beneficiaryId,
+              },
+            })
           )
         );
       }
       if (updatedActivities?.length) {
         await Promise.all(
           updatedActivities.map((activityCreationRequest) =>
-            activitiesApi.createActivity({ activityCreationRequest })
+            activitiesApi.createActivity({
+              activityCreationRequest: {
+                ...activityCreationRequest,
+                beneficiaryId,
+              },
+            })
           )
         );
       }
@@ -254,7 +282,7 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                   <Grid item xs={3}>
                     <Autocomplete
                       disabled={!editing}
-                      options={["Male", "Female", "Non-binary"]}
+                      options={["M", "F", "Non-binary"]}
                       renderInput={(params) => (
                         <TextField
                           name="identity"
@@ -344,7 +372,6 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                             />
                           )}
                           onChange={(_e, value) => {
-                            debugger;
                             setNeeds(value ?? []);
                           }}
                         />
