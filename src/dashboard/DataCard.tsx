@@ -1,10 +1,20 @@
 import ArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import CurrencyDollarIcon from '@mui/icons-material/AttachMoney';
 import { Avatar, Card, CardContent, Stack, SvgIcon, Typography } from '@mui/material';
+import { ReactNode } from 'react';
 
-export const DataCard = (props) => {
-  const { difference, title, positive = false, sx, value } = props;
+interface DataCardProps {
+  difference?: number;
+  title: string;
+  positive?: boolean;
+  sx?: any;
+  value: string;
+  icon: ReactNode;
+  color?: string;
+}
+
+export const DataCard = (props: DataCardProps) => {
+  const { difference, title, positive = false, sx, value, icon, color='success.main' } = props;
 
   return (
     <Card sx={sx}>
@@ -28,13 +38,13 @@ export const DataCard = (props) => {
           </Stack>
           <Avatar
             sx={{
-              backgroundColor: 'error.main',
+              backgroundColor: color,
               height: 56,
               width: 56
             }}
           >
             <SvgIcon>
-              <CurrencyDollarIcon />
+              {icon}
             </SvgIcon>
           </Avatar>
         </Stack>

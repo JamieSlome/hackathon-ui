@@ -17,7 +17,7 @@ const mockActivities: Activity[] = Array.from({ length: 30 }, (_, i) => ({
   }));
 
 
-export const useActivityList = (req: ListActivitiesRequest) => {
+export const useActivityList = (req?: ListActivitiesRequest) => {
     const [client] = useState(new ActivityApi());
 
     const {
