@@ -6,8 +6,10 @@ import {
   getAgeGroupIndex,
   getDemographicsConfig,
   getNegativeBarConfig,
+  getOutcomesConfig,
 } from "./utils";
 import { ageRanges, getAge } from "../beneficiaries/Table";
+import { OutcomeEvent } from "../../client/src";
 
 export const useChartOptions = () => {
   const { needs, organizations, beneficiaries } = useDashboardData();
@@ -67,8 +69,36 @@ export const useChartOptions = () => {
     });
   }, [beneficiaries]);
 
+  const outcomesOptions = useMemo(() => {
+    const outcomes = Object.values(OutcomeEvent).map((outcome) => ({
+      name: outcome,
+      count: 0,
+    }));
+    const filteredBeneficiaries = beneficiaries?.filter((b) => !!b.outcome);
+    filteredBeneficiaries?.forEach((b) => {
+      const outcomeIndex = outcomes.findIndex(
+        (outcome) => outcome.name === b.outcome
+      );
+      outcomes[outcomeIndex].count++;
+    });
+
+    const finalOutcomes = outcomes
+      .filter((o) => o.count > 0)
+      .map((outcome) => ({
+        ...outcome,
+        data: [
+          Math.floor(
+            (outcome.count / (filteredBeneficiaries?.length || 1)) * 100
+          ),
+        ],
+      }));
+
+    return getOutcomesConfig(finalOutcomes);
+  }, [beneficiaries]);
+
   return {
     needsComparisonOptions,
     demographicsOptions,
+    outcomesOptions,
   };
 };
