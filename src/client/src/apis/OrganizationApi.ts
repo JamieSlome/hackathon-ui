@@ -4,7 +4,7 @@
 /* eslint-disable */
 /**
  * People in Need - Springboard Service
- * For the backend supporting the Citi 2023 Techfest Hackathon project.  This backend is meant to be a simple CRUD service for supporting  collaboration between organizations and the beneficiaries supported by them.
+ * This backend is meant to be a simple CRUD service for supporting  collaboration between organizations and the beneficiaries supported by them.
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -15,16 +15,17 @@
  */
 
 
+import * as runtime from '../runtime';
 import type {
-    Organization,
+  Organization,
 } from '../models/index';
 import {
-    OrganizationFromJSON
+    OrganizationFromJSON,
+    OrganizationToJSON,
 } from '../models/index';
-import * as runtime from '../runtime';
 
 export interface FindOrganizationRequest {
-    id: string;
+    id: number;
 }
 
 /**
@@ -37,7 +38,7 @@ export interface OrganizationApiInterface {
     /**
      * Retrieve an organization based on id. 
      * @summary Retrieve an organization.
-     * @param {string} id 
+     * @param {number} id Organization identifier
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OrganizationApiInterface
