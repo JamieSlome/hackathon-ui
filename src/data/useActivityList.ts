@@ -15,11 +15,11 @@ const mockActivities: Activity[] = Array.from({ length: 30 }, (_, i) => ({
   id: i + 1,
   organizationId: i + 1,
   beneficiaryId: i + 1,
-  needId: i + 1,
+  needId: i % 2 ? 1 : 2,
   startDate: new Date(),
   endDate: new Date(),
   status: randomStatus(),
-  comments: `This is comment ${i + 1}`,
+  comments: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
 }));
 
 export const useActivityList = (req?: ListActivitiesRequest) => {

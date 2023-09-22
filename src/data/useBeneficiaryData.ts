@@ -51,6 +51,7 @@ export const useBeneficiaryData = (userId?: number) => {
   }, [userId]);
 
   return {
+    fullName: `${formData.firstName} ${formData.lastName}`,
     loading,
     setLoading,
     formData,

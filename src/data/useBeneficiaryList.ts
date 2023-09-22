@@ -14,7 +14,7 @@ function generateBeneficiaries(): Beneficiary[] {
       identity: `ID${i + 1}`,
       phoneNumber: `555-555-${i + 1}`,
       cabinNumber: i + 1,
-      needs: [i + 1],
+      needs: i % 2 ? [1] : [2],
       comments: `Comments for beneficiary ${i + 1}`,
     });
   }

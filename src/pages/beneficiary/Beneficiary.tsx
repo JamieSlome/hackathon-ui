@@ -3,6 +3,7 @@ import React from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { BeneficiaryForm } from ".";
+import { ActivityTimeline } from "./ActivityTimeline";
 
 export const Beneficiary: React.FC<{}> = () => {
   const { id: userIdStr, tab } = useParams() as {
@@ -24,6 +25,7 @@ export const Beneficiary: React.FC<{}> = () => {
         <Tab label="Timeline" value="timeline" />
       </Tabs>
       {tab === "info" && <BeneficiaryForm userId={userId as number} />}
+      {tab === "timeline" && <ActivityTimeline userId={userId as number} />}
     </Box>
   );
 };
