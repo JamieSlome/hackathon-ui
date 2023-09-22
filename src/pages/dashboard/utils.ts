@@ -1,6 +1,6 @@
 import Highcharts, { FormatterCallbackFunction } from "highcharts";
-import { Beneficiary, Organization } from "../client/src";
-import { ageRanges } from "../pages/beneficiaries/Table";
+import { Beneficiary, Organization } from "../../client/src";
+import { ageRanges } from "../beneficiaries/Table";
 
 // Custom template helper
 Highcharts.Templating.helpers.abs = (value) => Math.abs(value);

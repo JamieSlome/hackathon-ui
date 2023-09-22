@@ -172,11 +172,21 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
             </CardMedia>
             <CardContent>
               <Grid container spacing={2}>
-                <Grid item xs={2}>
+                <Grid
+                  item
+                  xs={2}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   <img
-                    src={`https://randomuser.me/api/portraits/men/${
-                      isNew ? randomImageId : formData.id
-                    }.jpg`}
+                    src={`https://randomuser.me/api/portraits/${
+                      formData.identity?.startsWith("f") ? "women" : "men"
+                    }/${isNew ? randomImageId : formData.id}.jpg`}
+                    height={200}
+                    width={200}
                   />
                 </Grid>
                 <Grid item xs={10} container spacing={2}>
@@ -440,63 +450,65 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
             </CardContent>
           </Card>
 
-          <Card
-            sx={{
-              width: "calc(100%  - 16px)",
-              border: "solid 1px #ddd",
-              boxShadow: "none",
-              margin: "16px 0 16px 16px",
-            }}
-          >
-            <CardMedia sx={{ marginLeft: "32px" }}>
-              <h4 style={{ marginBottom: 0 }}></h4>
-            </CardMedia>
-            <CardContent>
-              <List>
-                <ListItem sx={{ borderBottom: "solid 1px #ddd" }}>
-                  <ListItemText primary="Outcome" sx={{ flexGrow: 1000 }} />
-                  <ListItemText
-                    primary="Date"
-                    sx={{
-                      marginRight: 2,
-                      width: 120,
-                      textAlign: "center",
-                    }}
-                  />
-                </ListItem>
-                {formData.outcome && (
-                  <ListItem
-                    key={formData.outcome}
-                    sx={{ borderBottom: "solid 1px #ddd" }}
-                  >
+          {!isNew && (
+            <Card
+              sx={{
+                width: "calc(100%  - 16px)",
+                border: "solid 1px #ddd",
+                boxShadow: "none",
+                margin: "16px 0 16px 16px",
+              }}
+            >
+              <CardMedia sx={{ marginLeft: "32px" }}>
+                <h4 style={{ marginBottom: 0 }}></h4>
+              </CardMedia>
+              <CardContent>
+                <List>
+                  <ListItem sx={{ borderBottom: "solid 1px #ddd" }}>
+                    <ListItemText primary="Outcome" sx={{ flexGrow: 1000 }} />
                     <ListItemText
-                      primary={formData.outcome}
-                      secondary={formData.outcomeComment}
-                      sx={{ flexGrow: 1000 }}
-                    />
-                    <ListItemText
-                      primary={formData.outcomeDate?.toLocaleDateString()}
+                      primary="Date"
                       sx={{
                         marginRight: 2,
+                        width: 120,
+                        textAlign: "center",
                       }}
                     />
                   </ListItem>
+                  {formData.outcome && (
+                    <ListItem
+                      key={formData.outcome}
+                      sx={{ borderBottom: "solid 1px #ddd" }}
+                    >
+                      <ListItemText
+                        primary={formData.outcome}
+                        secondary={formData.outcomeComment}
+                        sx={{ flexGrow: 1000 }}
+                      />
+                      <ListItemText
+                        primary={formData.outcomeDate?.toLocaleDateString()}
+                        sx={{
+                          marginRight: 2,
+                        }}
+                      />
+                    </ListItem>
+                  )}
+                </List>
+                {editing && !formData.outcome && (
+                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        setShowOutcomeModal(true);
+                      }}
+                    >
+                      Add Outcome
+                    </Button>
+                  </Box>
                 )}
-              </List>
-              {editing && !formData.outcome && (
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      setShowOutcomeModal(true);
-                    }}
-                  >
-                    Add Outcome
-                  </Button>
-                </Box>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
           <Box
             sx={{

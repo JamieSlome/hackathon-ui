@@ -1,4 +1,4 @@
-import { useDashboardData } from "../data";
+import { useDashboardData } from "../../data";
 import { DataCard } from "./DataCard";
 
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
