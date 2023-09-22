@@ -4,7 +4,7 @@
 /* eslint-disable */
 /**
  * People in Need - Springboard Service
- * For the backend supporting the Citi 2023 Techfest Hackathon project.  This backend is meant to be a simple CRUD service for supporting  collaboration between organizations and the beneficiaries supported by them.
+ * This backend is meant to be a simple CRUD service for supporting  collaboration between organizations and the beneficiaries supported by them.
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -14,7 +14,7 @@
  * Do not edit the class manually.
  */
 
-import { exists } from '../runtime';
+import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export

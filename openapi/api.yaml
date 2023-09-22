@@ -2,12 +2,11 @@ openapi: 3.0.3
 info:
   title: People in Need - Springboard Service
   description: |-
-    For the backend supporting the Citi 2023 Techfest Hackathon project. 
     This backend is meant to be a simple CRUD service for supporting 
     collaboration between organizations and the beneficiaries supported by them.
   version: 1.0.0
 servers:
-  - url: 'https'
+  - url: "https"
 paths:
   /beneficiaries:
     get:
@@ -18,19 +17,20 @@ paths:
         Retrieve a list of beneficiaries currently tracked.
       operationId: listBeneficiaries
       responses:
-        '200':
+        "200":
           description: Successfully retrieved list of beneficiaries.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Beneficiaries'
+                $ref: "#/components/schemas/Beneficiaries"
   /beneficiaries/{id}:
     parameters:
       - name: id
         in: path
+        description: Beneficiary identifier
         required: true
         schema:
-          type: string
+          type: integer
     get:
       tags:
         - beneficiary
@@ -39,12 +39,12 @@ paths:
         Retrieve a beneficiary based on id.
       operationId: findBeneficiary
       responses:
-        '200':
+        "200":
           description: Successfully retrieved a beneficiary.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Beneficiary'
+                $ref: "#/components/schemas/Beneficiary"
   /organizations:
     get:
       tags:
@@ -54,19 +54,20 @@ paths:
         Retrieve a list of organizations currently tracked.
       operationId: listOrganizations
       responses:
-        '200':
+        "200":
           description: Successfully retrieved list of organizations.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organizations'
+                $ref: "#/components/schemas/Organizations"
   /organizations/{id}:
     parameters:
       - name: id
         in: path
+        description: Organization identifier
         required: true
         schema:
-          type: string
+          type: integer
     get:
       tags:
         - organization
@@ -75,12 +76,12 @@ paths:
         Retrieve an organization based on id.
       operationId: findOrganization
       responses:
-        '200':
+        "200":
           description: Successfully retrieved an organization.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
   /needs:
     get:
       tags:
@@ -90,19 +91,20 @@ paths:
         Retrieve a list of needs currently tracked.
       operationId: listNeeds
       responses:
-        '200':
+        "200":
           description: Successfully retrieved list of needs.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Needs'
+                $ref: "#/components/schemas/Needs"
   /needs/{id}:
     parameters:
       - name: id
         in: path
+        description: Need identifier
         required: true
         schema:
-          type: string
+          type: integer
     get:
       tags:
         - need
@@ -111,12 +113,12 @@ paths:
         Retrieve a need based on id.
       operationId: findNeed
       responses:
-        '200':
+        "200":
           description: Successfully retrieved a need.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Need'
+                $ref: "#/components/schemas/Need"
 components:
   schemas:
     Beneficiary:
@@ -143,20 +145,20 @@ components:
         needs:
           type: array
           items:
-            $ref: '#/components/schemas/BeneficiaryNeed'
+            $ref: "#/components/schemas/BeneficiaryNeed"
         comments:
           type: string
     Beneficiaries:
       type: array
       items:
-        $ref: '#/components/schemas/Beneficiary'
+        $ref: "#/components/schemas/Beneficiary"
     BeneficiaryNeed:
       type: object
       properties:
         need:
-          $ref: '#/components/schemas/Need'
+          $ref: "#/components/schemas/Need"
         organization:
-          $ref: '#/components/schemas/Organization'
+          $ref: "#/components/schemas/Organization"
     Need:
       type: object
       properties:
@@ -173,7 +175,7 @@ components:
     Needs:
       type: array
       items:
-        $ref: '#/components/schemas/Need'
+        $ref: "#/components/schemas/Need"
     Organization:
       type: object
       properties:
@@ -196,7 +198,4 @@ components:
     Organizations:
       type: array
       items:
-        $ref: '#/components/schemas/Organization'
-
-
-  
+        $ref: "#/components/schemas/Organization"
