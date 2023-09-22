@@ -233,15 +233,17 @@ export const BeneficiaryForm: React.FC<Props> = ({ isNew, userId }) => {
                     justifyContent: "center",
                   }}
                 >
-                  <img
-                    src={`https://randomuser.me/api/portraits/${
-                      formData.identity?.toLocaleLowerCase().startsWith("f")
-                        ? "women"
-                        : "men"
-                    }/${randomImageId}.jpg`}
-                    height={200}
-                    width={200}
-                  />
+                  {!isNew && (
+                    <img
+                      src={`https://randomuser.me/api/portraits/${
+                        formData.identity?.toLocaleLowerCase().startsWith("f")
+                          ? "women"
+                          : "men"
+                      }/${randomImageId}.jpg`}
+                      height={200}
+                      width={200}
+                    />
+                  )}
                 </Grid>
                 <Grid item xs={10} container spacing={2}>
                   <Grid item xs={12} sm={6}>
