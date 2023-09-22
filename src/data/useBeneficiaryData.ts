@@ -34,6 +34,7 @@ export const useBeneficiaryData = (userId?: string) => {
   const needsMap = new Map(needsList?.map((n) => [n.id?.toString(), n]));
   const orgMap = new Map(orgList?.map((org) => [org.id?.toString(), org]));
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [hasOutcome, setHasOutcome] = useState(false);
 
   useEffect(() => {
     if (activitiesList) {
@@ -54,6 +55,7 @@ export const useBeneficiaryData = (userId?: string) => {
           dateOfBirth: dayjs(b.dateOfBirth),
         });
         setLoading(false);
+        setHasOutcome(!!b.outcome);
       });
     }
   }, [userId]);
@@ -69,6 +71,7 @@ export const useBeneficiaryData = (userId?: string) => {
     needsList,
     orgList,
     activities,
+    hasOutcome,
     needsMap,
     orgMap,
   };
