@@ -11,7 +11,7 @@ function generateBeneficiaries(): Beneficiary[] {
       needs.add(Math.floor(Math.random() * 10) + 1);
     }
     beneficiaries.push({
-      id: i + 1,
+      id: `${i + 1}`,
       firstName: `First${i + 1}`,
       lastName: `Last${i + 1}`,
       dateOfBirth: new Date(1990 + i, 0, 1),

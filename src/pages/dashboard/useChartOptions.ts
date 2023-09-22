@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useDashboardData } from "../data";
+import { useDashboardData } from "../../data";
 import {
   BarSeries,
   PieSeries,
@@ -7,7 +7,7 @@ import {
   getDemographicsConfig,
   getNegativeBarConfig,
 } from "./utils";
-import { ageRanges, getAge } from "../pages/beneficiaries/Table";
+import { ageRanges, getAge } from "../beneficiaries/Table";
 
 export const useChartOptions = () => {
   const { needs, organizations, beneficiaries } = useDashboardData();

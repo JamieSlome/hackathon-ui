@@ -17,6 +17,7 @@ import TextField from "@mui/material/TextField";
 import React, { useState } from "react";
 import { Beneficiary } from "../../client/src";
 import { Link } from "react-router-dom";
+import { useNeedList } from "../../data";
 
 interface TableProps {
   data: Required<Beneficiary>[];
@@ -35,6 +36,9 @@ export const ageRanges = [
 
 export function getAge(birthDate: Date): number {
   const today = new Date();
+  if (!birthDate) {
+    debugger;
+  }
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
   if (
@@ -52,13 +56,16 @@ export const BeneficiariesTable: React.FC<TableProps> = ({ data }) => {
     age: "",
     name: "",
     sex: "",
-    needs: "",
+    needs: [],
   });
+  const { data: needs = [] } = useNeedList();
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFilter({ ...filter, [name]: value });
   };
+
+  const needsMap = new Map(needs.map((need) => [need.name, need.id]));
 
   const filteredData = data.filter((person) => {
     const age = getAge(person.dateOfBirth);
@@ -69,11 +76,11 @@ export const BeneficiariesTable: React.FC<TableProps> = ({ data }) => {
         person.firstName.toLowerCase().includes(filter.name.toLowerCase()) ||
         person.lastName.toLowerCase().includes(filter.name.toLowerCase())) &&
       (filter.sex === "" ||
-        person.identity.toLowerCase().includes(filter.sex.toLowerCase())) //&&
-      // (filter.needs === "" ||
-      //   person.needs.some((needId) =>
-      //     need?.name?.toLowerCase().includes(filter.needs.toLowerCase())
-      //   ))
+        person.identity.toLowerCase().includes(filter.sex.toLowerCase())) &&
+      (filter.needs.length === 0 ||
+        person.needs.some((needId) =>
+          filter.needs.some((need) => needsMap.get(need) === `${needId}`)
+        ))
     );
   });
 
@@ -159,20 +166,42 @@ export const BeneficiariesTable: React.FC<TableProps> = ({ data }) => {
             ))}
           </Select>
         </FormControl>
-        <TextField
-          label="Needs"
-          name="needs"
-          value={filter.needs}
-          onChange={handleFilterChange}
+
+        <FormControl
           variant="outlined"
-          margin="normal"
-          sx={{
-            "& input": {
-              backgroundColor: "white",
-              color: "black",
-            },
-          }}
-        />
+          style={{ backgroundColor: "white", width: 300 }}
+        >
+          <InputLabel htmlFor="sex-select">Needs</InputLabel>
+          <Select
+            multiple
+            value={filter.needs}
+            onChange={(e) => {
+              const { name, value } = e.target as {
+                name: string;
+                value: string[];
+              };
+              setFilter({ ...filter, [name]: value.includes("") ? [] : value });
+            }}
+            label="Needs"
+            inputProps={{
+              name: "needs",
+              id: "needs-select",
+            }}
+            sx={{
+              "& input": {
+                backgroundColor: "white",
+                color: "black",
+              },
+            }}
+          >
+            <MenuItem value={""}>Any</MenuItem>
+            {needs.map((need) => (
+              <MenuItem key={need.name} value={need.name}>
+                {need.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <TextField
           label="Name"
           name="name"

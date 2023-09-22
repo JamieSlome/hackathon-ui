@@ -12,7 +12,8 @@ import { fakeAuthProvider } from "./auth";
 import { Beneficiaries } from "./pages/beneficiaries";
 import { BeneficiaryForm } from "./pages/beneficiary";
 import { Layout } from "./components";
-import { Dashboard } from "./dashboard";
+import { Dashboard } from "./pages/dashboard";
+import { Landing } from "./pages/landing";
 import { Beneficiary } from "./pages/beneficiary/Beneficiary";
 
 const router = createBrowserRouter([
@@ -29,6 +30,14 @@ const router = createBrowserRouter([
         // loader: protectedLoader,
         Component: Layout,
         children: [
+          {
+            path: "/",
+            element: <Landing />,
+          },
+          {
+            path: "/beneficiaries/:id",
+            element: <Beneficiary />,
+          },
           {
             path: "/beneficiaries",
             element: <Beneficiaries />,

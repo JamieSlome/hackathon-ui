@@ -6,7 +6,12 @@ info:
     collaboration between organizations and the beneficiaries supported by them.
   version: 1.0.0
 servers:
-  - url: "https"
+  - url: "https://pttmuyg4gp.us-east-1.awsapprunner.com"
+    description: Main deployed environment
+  - url: "https://tpztctibrc.us-east-1.awsapprunner.com"
+    description: Amit's environment
+  - url: "https://fw22knfxhnc.us-east-1.awsapprunner.com"
+    description: Daniel's environment
 paths:
   /beneficiaries:
     post:
@@ -51,7 +56,7 @@ paths:
         description: Beneficiary identifier
         required: true
         schema:
-          type: integer
+          type: string
     get:
       tags:
         - beneficiary
@@ -62,6 +67,43 @@ paths:
       responses:
         "200":
           description: Successfully retrieved a beneficiary.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Beneficiary"
+  /beneficiaries/{id}/outcomes:
+    parameters:
+      - name: id
+        in: path
+        description: Beneficiary identifier
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - beneficiary
+      summary: Create a Beneficiary's outcome.
+      description: |
+        Create a beneficiary's outcome.
+      operationId: createBeneficiaryOutcome
+      requestBody:
+        description: Outcome to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                outcomeEvent:
+                  $ref: "#/components/schemas/OutcomeEvent"
+                outcomeComment:
+                  type: string
+                outcomeDate:
+                  type: string
+                  format: date-time
+      responses:
+        "201":
+          description: Successfully added a beneficiary outcome.
           content:
             application/json:
               schema:
@@ -80,7 +122,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Organization"
+              $ref: "#/components/schemas/OrganizationCreationRequest"
       responses:
         "201":
           description: Successfully created an organization.
@@ -95,7 +137,7 @@ paths:
           description: Need identifier
           required: false
           schema:
-            type: integer
+            type: string
       tags:
         - organization
       summary: List organizations.
@@ -116,7 +158,7 @@ paths:
         description: Organization identifier
         required: true
         schema:
-          type: integer
+          type: string
     get:
       tags:
         - organization
@@ -174,7 +216,7 @@ paths:
         description: Need identifier
         required: true
         schema:
-          type: integer
+          type: string
     get:
       tags:
         - need
@@ -224,19 +266,19 @@ paths:
           description: Organization identifier
           required: false
           schema:
-            type: integer
+            type: string
         - name: beneficiaryId
           in: query
           description: Beneficiary identifier
           required: false
           schema:
-            type: integer
+            type: string
         - name: needId
           in: query
           description: Need identifier
           required: false
           schema:
-            type: integer
+            type: string
       tags:
         - activity
       summary: List all activities.
@@ -257,7 +299,7 @@ paths:
         description: Activity identifier
         required: true
         schema:
-          type: integer
+          type: string
     get:
       tags:
         - activity
@@ -294,16 +336,15 @@ components:
         needs:
           type: array
           items:
-            type: integer
+            type: string
         comments:
           type: string
     Beneficiary:
       type: object
       properties:
         id:
-          type: integer
-          format: int 64
-          example: 1
+          type: string
+          example: ben-123245asdf
         firstName:
           type: string
         lastName:
@@ -321,7 +362,20 @@ components:
         needs:
           type: array
           items:
-            type: integer
+            type: string
+        outcome:
+          $ref: "#/components/schemas/OutcomeEvent"
+        outcomeComment:
+          type: string
+        outcomeDate:
+          type: string
+          format: date-time
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
         comments:
           type: string
     Beneficiaries:
@@ -348,9 +402,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int 64
-          example: 1
+          type: string
+          example: need-123245asdf
         name:
           type: string
         description:
@@ -361,13 +414,9 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Need"
-    Organization:
+    OrganizationCreationRequest:
       type: object
       properties:
-        id:
-          type: integer
-          format: int 64
-          example: 1
         name:
           type: string
         streetAddress:
@@ -383,7 +432,29 @@ components:
         needs:
           type: array
           items:
-            type: integer
+            type: string
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          example: org-123245asdf
+        name:
+          type: string
+        streetAddress:
+          type: string
+        state:
+          type: string
+        zipcode:
+          type: string
+        phoneNumber:
+          type: string
+        description:
+          type: string
+        needs:
+          type: array
+          items:
+            type: string
     Organizations:
       type: array
       items:
@@ -392,11 +463,11 @@ components:
       type: object
       properties:
         organizationId:
-          type: integer
+          type: string
         beneficiaryId:
-          type: integer
+          type: string
         needId:
-          type: integer
+          type: string
         startDate:
           type: string
           format: date-time
@@ -411,15 +482,14 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int 64
-          example: 1
+          type: string
+          example: act-123245asdf
         organizationId:
-          type: integer
+          type: string
         beneficiaryId:
-          type: integer
+          type: string
         needId:
-          type: integer
+          type: string
         startDate:
           type: string
           format: date-time
@@ -437,3 +507,19 @@ components:
     ActivityStatus:
       type: string
       enum: [IN_PROGRESS, COMPLETED]
+    OutcomeEvent:
+      type: string
+      enum:
+        [
+          Found Permanent Housing,
+          Incarcerated,
+          Deceased,
+          Assertive Community,
+          Long-term Substance Abuse Treatment,
+          Rule Violations,
+          Bank Account Opened,
+          GED,
+          Found Emplovment,
+          Training Program,
+          Other,
+        ]

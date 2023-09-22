@@ -9,10 +9,10 @@ export type EditableBeneficiary = Omit<Beneficiary, "dateOfBirth"> & {
   dateOfBirth: Dayjs | null;
 };
 
-export const useBeneficiaryData = (userId?: number) => {
+export const useBeneficiaryData = (userId?: string) => {
   const [loading, setLoading] = useState(!!userId);
   const [formData, setFormData] = useState<EditableBeneficiary>({
-    id: 0,
+    id: "",
     firstName: "",
     lastName: "",
     dateOfBirth: null,
@@ -27,8 +27,8 @@ export const useBeneficiaryData = (userId?: number) => {
   const { data: activitiesList } = useActivityList({ beneficiaryId: userId });
   const { data: orgList } = useOrganizationList();
 
-  const needsMap = new Map(needsList?.map((n) => [n.id, n]));
-  const orgMap = new Map(orgList?.map((org) => [org.id, org]));
+  const needsMap = new Map(needsList?.map((n) => [n.id?.toString(), n]));
+  const orgMap = new Map(orgList?.map((org) => [org.id?.toString(), org]));
   const [activities, setActivities] = useState<Activity[]>([]);
 
   useEffect(() => {
@@ -57,6 +57,7 @@ export const useBeneficiaryData = (userId?: number) => {
     formData,
     setFormData,
     setActivities,
+    activitiesList,
     needsList,
     orgList,
     activities,

@@ -6,11 +6,10 @@ import { BeneficiaryForm } from ".";
 import { ActivityTimeline } from "./ActivityTimeline";
 
 export const Beneficiary: React.FC<{}> = () => {
-  const { id: userIdStr, tab } = useParams() as {
+  const { id: userId, tab } = useParams() as {
     id?: string;
     tab?: "info" | "timeline";
   };
-  const userId = userIdStr ? Number(userIdStr) : undefined;
 
   const navigate = useNavigate();
 
@@ -24,8 +23,8 @@ export const Beneficiary: React.FC<{}> = () => {
         <Tab label="Info" value="info" />
         <Tab label="Timeline" value="timeline" />
       </Tabs>
-      {tab === "info" && <BeneficiaryForm userId={userId as number} />}
-      {tab === "timeline" && <ActivityTimeline userId={userId as number} />}
+      {tab === "info" && <BeneficiaryForm userId={userId} />}
+      {tab === "timeline" && userId && <ActivityTimeline userId={userId} />}
     </Box>
   );
 };

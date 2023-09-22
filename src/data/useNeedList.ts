@@ -1,25 +1,24 @@
 import { useState } from "react";
-import { Need, NeedApi } from "../client/src";
 import { useQuery } from "react-query";
-
-const needs: Need[] = [];
-
-for (let i = 0; i < 10; i++) {
-  const need: Need = {
-    id: i + 1,
-    name: `Need ${i + 1}`,
-    description: `Description for Need ${i + 1}`,
-    alternativeName: `Alternative Name for Need ${i + 1}`,
-  };
-  needs.push(need);
-}
+import { Configuration, NeedApi } from "../client/src";
 
 export const useNeedList = () => {
-  const [client] = useState(new NeedApi());
+  const [client] = useState(
+    new NeedApi(
+      new Configuration({
+        basePath: "https://pttmuyg4gp.us-east-1.awsapprunner.com",
+      })
+    )
+  );
 
   const { data, isLoading } = useQuery(["needs"], async () => {
-    // return client.listNeeds();
-    return needs;
+    try {
+      const n = await client.listNeeds();
+      return n;
+    } catch (err) {
+      debugger;
+      return [];
+    }
   });
 
   return { data, isLoading };

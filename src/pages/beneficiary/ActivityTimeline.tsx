@@ -15,7 +15,7 @@ export const ActivityTimeline = ({
   userId,
 }: {
   hideFinished?: boolean;
-  userId: number;
+  userId: string;
 }) => {
   const { activities, fullName, orgMap, needsMap } = useBeneficiaryData(userId);
   const filteredActivities = React.useMemo(
@@ -40,8 +40,10 @@ export const ActivityTimeline = ({
         <LinearProgress />
       ) : (
         filteredActivities.map((activity, i) => {
-          const need = needsMap.get(activity.needId)?.name as string;
-          const org = orgMap.get(activity.organizationId)?.name as string;
+          const need = needsMap.get(activity.needId?.toString())
+            ?.name as string;
+          const org = orgMap.get(activity.organizationId?.toString())
+            ?.name as string;
           return (
             <TimelineItem key={activity.id}>
               <TimelineOppositeContent
