@@ -68,8 +68,8 @@ export const OutcomeModal: React.FC<Props> = ({ open, onChange, onClose }) => {
               id: "outcome-select",
             }}
           >
-            {OUTCOMES.map(([value, label]) => (
-              <MenuItem key={label} value={value}>
+            {OUTCOMES.map(([, label]) => (
+              <MenuItem key={label} value={label}>
                 {label}
               </MenuItem>
             ))}
