@@ -1,3 +1,5 @@
+// @ts-ignore
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -13,14 +15,13 @@
  */
 
 
-import * as runtime from '../runtime';
 import type {
-  Organization,
+    Organization,
 } from '../models/index';
 import {
-    OrganizationFromJSON,
-    OrganizationToJSON,
+    OrganizationFromJSON
 } from '../models/index';
+import * as runtime from '../runtime';
 
 export interface FindOrganizationRequest {
     id: string;

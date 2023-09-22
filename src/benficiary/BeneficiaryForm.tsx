@@ -17,10 +17,6 @@ export const BeneficiaryForm: React.FC<{}> = () => {
     comments: "",
   });
 
-  const handleDateChange = (date: Date | null) => {
-    setFormData({ ...formData, dateOfBirth: date });
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });

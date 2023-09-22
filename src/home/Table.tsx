@@ -70,8 +70,8 @@ export const HomeTable: React.FC<TableProps> = ({ data }) => {
       (filter.sex === "" ||
         person.identity.toLowerCase().includes(filter.sex.toLowerCase())) &&
       (filter.needs === "" ||
-        person.needs.some((need) =>
-          need.name.toLowerCase().includes(filter.needs.toLowerCase())
+        person.needs.some(({ need }) =>
+          need?.name?.toLowerCase().includes(filter.needs.toLowerCase())
         ))
     );
   });
@@ -218,10 +218,10 @@ export const HomeTable: React.FC<TableProps> = ({ data }) => {
                 <TableCell>{beneficiary.phoneNumber}</TableCell>
                 <TableCell>{beneficiary.cabinNumber}</TableCell>
                 <TableCell>
-                  {beneficiary.needs.map((need) => (
+                  {beneficiary.needs.filter(Boolean).map(({ need }) => (
                     <Chip
-                      key={need.id}
-                      label={need.name}
+                      key={need!.id}
+                      label={need!.name}
                       sx={{ marginRight: 1 }}
                     />
                   ))}

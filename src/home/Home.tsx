@@ -145,6 +145,7 @@ const users = [
 ].map((b) => ({
   ...b,
   dateOfBirth: new Date(b.dateOfBirth),
+  needs: b.needs.map((need) => ({ need })),
 })) as Required<Beneficiary>[];
 
 export const Home = () => {
