@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
-import { Beneficiary } from '../client/src';
-import { Button, Grid, Paper, TextField, Typography } from '@mui/material';
-
+import React, { useState } from "react";
+import { Beneficiary } from "../client/src";
+import { Button, Grid, Paper, TextField, Typography } from "@mui/material";
 
 export const BeneficiaryForm: React.FC<{}> = () => {
-  const [formData, setFormData] = useState<Omit<Beneficiary, "dateOfBirth"> & { dateOfBirth: Date | null }>({
+  const [formData, setFormData] = useState<
+    Omit<Beneficiary, "dateOfBirth"> & { dateOfBirth: Date | null }
+  >({
     id: 0,
-    firstName: '',
-    lastName: '',
+    firstName: "",
+    lastName: "",
     dateOfBirth: null,
-    identity: '',
-    phoneNumber: '',
+    identity: "",
+    phoneNumber: "",
     cabinNumber: 0,
     needs: [],
-    comments: '',
+    comments: "",
   });
 
   const handleDateChange = (date: Date | null) => {
