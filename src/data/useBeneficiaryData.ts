@@ -46,7 +46,7 @@ export const useBeneficiaryData = (userId?: string) => {
     if (userId) {
       const beneficiaryApi = new BeneficiaryApi(
         new Configuration({
-          basePath: "https://pttmuyg4gp.us-east-1.awsapprunner.com",
+          basePath: import.meta.env.VITE_API_BASE_URL,
         })
       );
       beneficiaryApi.findBeneficiary({ id: userId }).then((b) => {

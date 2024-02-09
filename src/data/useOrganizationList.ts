@@ -6,7 +6,7 @@ export const useOrganizationList = (needId?: string) => {
   const [client] = useState(
     new OrganizationApi(
       new Configuration({
-        basePath: "https://pttmuyg4gp.us-east-1.awsapprunner.com",
+        basePath: import.meta.env.VITE_API_BASE_URL,
       })
     )
   );

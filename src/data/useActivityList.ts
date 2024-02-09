@@ -10,7 +10,7 @@ export const useActivityList = (req?: ListActivitiesRequest) => {
   const [client] = useState(
     new ActivityApi(
       new Configuration({
-        basePath: "https://pttmuyg4gp.us-east-1.awsapprunner.com",
+        basePath: import.meta.env.VITE_API_BASE_URL,
       })
     )
   );
