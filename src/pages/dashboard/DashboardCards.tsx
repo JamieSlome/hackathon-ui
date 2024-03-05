@@ -41,7 +41,7 @@ export const DashboardCards = () => {
   return (
     <Grid container spacing={3}>
       {summaryCards.map((summary) => (
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid key={summary.title} item xs={12} sm={6} md={3}>
           <DataCard
             title={summary.title}
             value={summary.value}
